@@ -29,14 +29,11 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /pclc2025/
+        server-dir: /
         port: 21
         protocol: ftps
         security: loose
         exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
           **/.git*
           **/.git*/**
           **/node_modules/**
