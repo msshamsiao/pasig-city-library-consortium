@@ -37,8 +37,8 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: ./public_html/
-        protocol: ftps
+        server-dir: /public_html/
+        protocol: ftp
         port: 21
         log-level: verbose
         exclude: |
@@ -46,3 +46,4 @@ jobs:
           **/.git*/**
           **/node_modules/**
           **/tests/**
+          **/storage/logs/**
