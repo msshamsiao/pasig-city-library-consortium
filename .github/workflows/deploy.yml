@@ -23,10 +23,23 @@ jobs:
     - name: Build assets
       run: npm run build
     
-    - name: FTP Deploy
+    - name: Deploy Laravel App
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: /pclc2025/
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+    
+    - name: Deploy Public Files
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: /public_html/
+        local-dir: ./public/
