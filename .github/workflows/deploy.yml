@@ -31,30 +31,18 @@ jobs:
     - name: Build assets
       run: npm run build
     
-    - name: Deploy Laravel App (excluding public)
-      uses: SamKirkland/FTP-Deploy-Action@4.3.0
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: ./
-        protocol: ftps
-        port: 21
-        exclude: |
-          **/public/**
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          **/tests/**
-          **/.env
-    
-    - name: Deploy Public folder to public_html
+    - name: Deploy to GoDaddy
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: ./public_html/
-        local-dir: ./public/
         protocol: ftps
         port: 21
+        log-level: verbose
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/tests/**
