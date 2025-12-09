@@ -29,7 +29,7 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /pclc2025/
+        server-dir: ./pclc2025/
         exclude: |
           **/.git*
           **/.git*/**
@@ -41,5 +41,5 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /public_html/
+        server-dir: ./public_html/
         local-dir: ./public/
