@@ -12,6 +12,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+    
+    - name: Install Composer dependencies
+      run: composer install --no-dev --optimize-autoloader
+    
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
@@ -23,16 +31,30 @@ jobs:
     - name: Build assets
       run: npm run build
     
-    - name: Deploy to GoDaddy
+    - name: Deploy Laravel App (excluding public)
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: ./
         protocol: ftps
         port: 21
-        log-level: verbose
         exclude: |
+          **/public/**
           **/.git*
           **/.git*/**
           **/node_modules/**
+          **/tests/**
+          **/.env
+    
+    - name: Deploy Public folder to public_html
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: ./public_html/
+        local-dir: ./public/
+        protocol: ftps
+        port: 21
