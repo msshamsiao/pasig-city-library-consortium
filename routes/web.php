@@ -2,12 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\AboutController;
-use App\Http\Controllers\LibrariesController;
-use App\Http\Controllers\ActivitiesController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\MemberController;
@@ -29,42 +23,40 @@ use App\Http\Controllers\Admin\SettingController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/search', [HomeController::class, 'search'])->name('home.search');
 
-// About
-Route::get('/about', [AboutController::class, 'index'])->name('about');
-
-// Libraries
-Route::get('/libraries', [LibrariesController::class, 'index'])->name('libraries');
-
-// Activities
-Route::get('/activities', [ActivitiesController::class, 'index'])->name('activities');
-
-// Service
-Route::get('/service', [ServiceController::class, 'index'])->name('service');
-Route::post('/service', [ServiceController::class, 'store'])->name('service.store');
-
-// Contact
-Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
-
+// Dashboard - Redirect to role-specific dashboard
 Route::get('/dashboard', function () {
-    return redirect()->route('admin.dashboard');
+    $user = auth()->user();
+    
+    if ($user->isSuperAdmin()) {
+        return redirect()->route('admin.dashboard');
+    } elseif ($user->isMemberLibrarian()) {
+        return redirect()->route('librarian.dashboard');
+    } elseif ($user->isBorrower()) {
+        return redirect()->route('borrower.dashboard');
+    }
+    
+    return redirect()->route('home');
 })->middleware(['auth'])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN ROUTES (LOGIN REQUIRED)
+| SUPER ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])->group(function () {
     
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Analytics
+    Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
+    
+    // Archive
+    Route::get('/archive', [\App\Http\Controllers\Admin\ArchiveController::class, 'index'])->name('archive');
+    
+    // Audit Trail
+    Route::get('/audit-trail', [\App\Http\Controllers\Admin\AuditTrailController::class, 'index'])->name('audit-trail');
     
     // Books Management
     Route::resource('books', BookController::class);
@@ -109,5 +101,55 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
 });
 
-// Breeze Authentication Routes
+/*
+|--------------------------------------------------------------------------
+| MEMBER LIBRARIAN ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member_librarian'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [\App\Http\Controllers\Librarian\LibrarianDashboardController::class, 'index'])->name('dashboard');
+    
+    // Members Management (Upload Only)
+    Route::get('/members', [\App\Http\Controllers\Librarian\MemberController::class, 'index'])->name('members.index');
+    Route::get('/members/create', [\App\Http\Controllers\Librarian\MemberController::class, 'create'])->name('members.create');
+    Route::post('/members', [\App\Http\Controllers\Librarian\MemberController::class, 'store'])->name('members.store');
+    Route::post('/members/upload', [\App\Http\Controllers\Librarian\MemberController::class, 'upload'])->name('members.upload');
+    
+    // Book Requests (Approve/Reject)
+    Route::get('/book-requests', [\App\Http\Controllers\Librarian\BookRequestController::class, 'index'])->name('book-requests.index');
+    Route::post('/book-requests/{bookRequest}/approve', [\App\Http\Controllers\Librarian\BookRequestController::class, 'approve'])->name('book-requests.approve');
+    Route::post('/book-requests/{bookRequest}/reject', [\App\Http\Controllers\Librarian\BookRequestController::class, 'reject'])->name('book-requests.reject');
+    
+    // Books Management (Upload Only)
+    Route::get('/books', [\App\Http\Controllers\Librarian\BookController::class, 'index'])->name('books.index');
+    Route::get('/books/create', [\App\Http\Controllers\Librarian\BookController::class, 'create'])->name('books.create');
+    Route::post('/books', [\App\Http\Controllers\Librarian\BookController::class, 'store'])->name('books.store');
+    Route::post('/books/upload', [\App\Http\Controllers\Librarian\BookController::class, 'upload'])->name('books.upload');
+    
+    // Activities (Add)
+    Route::get('/activities', [\App\Http\Controllers\Librarian\ActivityController::class, 'index'])->name('activities.index');
+    Route::get('/activities/create', [\App\Http\Controllers\Librarian\ActivityController::class, 'create'])->name('activities.create');
+    Route::post('/activities', [\App\Http\Controllers\Librarian\ActivityController::class, 'store'])->name('activities.store');
+    Route::get('/activities/{activity}/edit', [\App\Http\Controllers\Librarian\ActivityController::class, 'edit'])->name('activities.edit');
+    Route::put('/activities/{activity}', [\App\Http\Controllers\Librarian\ActivityController::class, 'update'])->name('activities.update');
+});
+
+/*
+|--------------------------------------------------------------------------
+| BORROWER ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('borrower')->name('borrower.')->middleware(['auth', 'role:borrower'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [\App\Http\Controllers\Borrower\BorrowerDashboardController::class, 'index'])->name('dashboard');
+    
+    // Reservations
+    Route::get('/reservations', [\App\Http\Controllers\Borrower\ReservationController::class, 'index'])->name('reservations.index');
+    Route::post('/reservations', [\App\Http\Controllers\Borrower\ReservationController::class, 'store'])->name('reservations.store');
+    Route::delete('/reservations/{reservation}', [\App\Http\Controllers\Borrower\ReservationController::class, 'destroy'])->name('reservations.cancel');
+});
+
 require __DIR__.'/auth.php';

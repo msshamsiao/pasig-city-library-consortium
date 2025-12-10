@@ -44,21 +44,6 @@
                     <a href="{{ route('home') }}" class="py-4 px-3 text-gray-700 hover:text-blue-600 border-b-2 {{ request()->routeIs('home') ? 'border-blue-600 text-blue-600' : 'border-transparent' }}">
                         Home
                     </a>
-                    <a href="{{ route('about') }}" class="py-4 px-3 text-gray-700 hover:text-blue-600 border-b-2 {{ request()->routeIs('about') ? 'border-blue-600 text-blue-600' : 'border-transparent' }}">
-                        About
-                    </a>
-                    <a href="{{ route('libraries') }}" class="py-4 px-3 text-gray-700 hover:text-blue-600 border-b-2 {{ request()->routeIs('libraries') ? 'border-blue-600 text-blue-600' : 'border-transparent' }}">
-                        Libraries
-                    </a>
-                    <a href="{{ route('activities') }}" class="py-4 px-3 text-gray-700 hover:text-blue-600 border-b-2 {{ request()->routeIs('activities') ? 'border-blue-600 text-blue-600' : 'border-transparent' }}">
-                        Activities
-                    </a>
-                    <a href="{{ route('service') }}" class="py-4 px-3 text-gray-700 hover:text-blue-600 border-b-2 {{ request()->routeIs('service') ? 'border-blue-600 text-blue-600' : 'border-transparent' }}">
-                        Service
-                    </a>
-                    <a href="{{ route('contact') }}" class="py-4 px-3 text-gray-700 hover:text-blue-600 border-b-2 {{ request()->routeIs('contact') ? 'border-blue-600 text-blue-600' : 'border-transparent' }}">
-                        Contact Us
-                    </a>
                 </div>
             </div>
         </nav>

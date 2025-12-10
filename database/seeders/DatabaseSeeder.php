@@ -18,12 +18,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create default admin user
+        // Create default users for each role
+        
+        // Super Admin
         User::create([
-            'name' => 'Admin',
-            'email' => 'admin@pasigcitylibrary.gov.ph',
-            'password' => bcrypt('admin123'),
-            'role' => 'admin',
+            'name' => 'Super Admin',
+            'email' => 'superadmin@pasigcitylibrary.gov.ph',
+            'password' => bcrypt('superadmin123'),
+            'role' => 'super_admin',
+            'email_verified_at' => now(),
+        ]);
+        
+        // Member Librarian (for each library - create one sample)
+        User::create([
+            'name' => 'Librarian',
+            'email' => 'librarian@pasigcitylibrary.gov.ph',
+            'password' => bcrypt('librarian123'),
+            'role' => 'member_librarian',
+            'email_verified_at' => now(),
+        ]);
+        
+        // Borrower/Member
+        User::create([
+            'name' => 'John Doe',
+            'email' => 'borrower@example.com',
+            'password' => bcrypt('borrower123'),
+            'role' => 'borrower',
+            'email_verified_at' => now(),
         ]);
         
         // Seed Libraries

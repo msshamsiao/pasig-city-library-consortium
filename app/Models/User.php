@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'library_id',
     ];
 
     /**
@@ -45,5 +46,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relationship: User belongs to a Library (for member_librarian role)
+     */
+    public function library()
+    {
+        return $this->belongsTo(Library::class);
+    }
+
+    /**
+     * Check if user is Super Admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    /**
+     * Check if user is Member Librarian
+     */
+    public function isMemberLibrarian(): bool
+    {
+        return $this->role === 'member_librarian';
+    }
+
+    /**
+     * Check if user is Borrower
+     */
+    public function isBorrower(): bool
+    {
+        return $this->role === 'borrower';
+    }
+
+    /**
+     * Check if user has any of the given roles
+     */
+    public function hasRole(...$roles): bool
+    {
+        return in_array($this->role, $roles);
     }
 }
