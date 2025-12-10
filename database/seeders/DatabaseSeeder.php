@@ -18,6 +18,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create default admin user
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@pasigcitylibrary.gov.ph',
+            'password' => bcrypt('admin123'),
+            'role' => 'admin',
+        ]);
+        
         // Seed Libraries
         $this->call([
             LibrarySeeder::class,
