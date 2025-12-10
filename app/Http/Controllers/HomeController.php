@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Library;
+use App\Models\Book;
 
 class HomeController extends Controller
 {
@@ -11,22 +13,19 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Library statistics - you can fetch from database later
+        // Fetch active libraries from database
+        $libraries = Library::active()->orderBy('name')->get();
+        
+        // Calculate dynamic statistics from database
+        $totalBooks = Book::count();
+        $availableBooks = Book::where('status', 'available')->count();
+        $onLoan = Book::where('status', 'borrowed')->count();
+        
         $statistics = [
-            'total_libraries' => 6,
-            'total_books' => 15243,
-            'available_books' => 12890,
-            'on_loan' => 2353,
-        ];
-
-        // Library list for sidebar
-        $libraries = [
-            ['name' => 'Pasig City Library', 'type' => 'Public'],
-            ['name' => 'PLP Library', 'type' => 'University'],
-            ['name' => 'PCIST Library', 'type' => 'Technical'],
-            ['name' => 'PSHS Library', 'type' => 'High School'],
-            ['name' => 'RHS Library', 'type' => 'High School'],
-            ['name' => 'City Hall Library', 'type' => 'Government'],
+            'total_libraries' => $libraries->count(),
+            'total_books' => $totalBooks,
+            'available_books' => $availableBooks,
+            'on_loan' => $onLoan,
         ];
 
         return view('home', compact('statistics', 'libraries'));
@@ -37,12 +36,44 @@ class HomeController extends Controller
      */
     public function search(Request $request)
     {
-        $category = $request->input('category');
-        $library = $request->input('library');
-        $search = $request->input('search');
+        $category = $request->input('category', 'all');
+        $library = $request->input('library', 'all');
+        $search = $request->input('search', '');
 
-        // TODO: Implement search logic here
-        
-        return redirect()->back()->with('info', 'Search functionality coming soon!');
+        $query = Book::query();
+
+        // Filter by search term based on category
+        if (!empty($search)) {
+            switch ($category) {
+                case 'book':
+                case 'title':
+                    $query->where('title', 'like', '%' . $search . '%');
+                    break;
+                case 'author':
+                    $query->where('author', 'like', '%' . $search . '%');
+                    break;
+                case 'subject':
+                    $query->where('category', 'like', '%' . $search . '%');
+                    break;
+                case 'all':
+                default:
+                    $query->where(function($q) use ($search) {
+                        $q->where('title', 'like', '%' . $search . '%')
+                          ->orWhere('author', 'like', '%' . $search . '%')
+                          ->orWhere('isbn', 'like', '%' . $search . '%')
+                          ->orWhere('category', 'like', '%' . $search . '%');
+                    });
+                    break;
+            }
+        }
+
+        // Note: Library filter not implemented yet - needs library_id in books table
+
+        $books = $query->limit(50)->get();
+
+        return response()->json([
+            'books' => $books,
+            'total' => $books->count()
+        ]);
     }
 }

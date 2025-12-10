@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\SettingController;
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/search', [HomeController::class, 'search'])->name('home.search');
 
 // About
 Route::get('/about', [AboutController::class, 'index'])->name('about');

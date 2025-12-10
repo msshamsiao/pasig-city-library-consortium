@@ -14,7 +14,6 @@ class Library extends Model
      */
     protected $fillable = [
         'name',
-        'type',
         'address',
         'phone',
         'website',
@@ -22,7 +21,6 @@ class Library extends Model
         'position',
         'logo',
         'is_active',
-        'order',
     ];
 
     /**
@@ -38,13 +36,5 @@ class Library extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    /**
-     * Scope a query to order libraries by custom order.
-     */
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('order', 'asc')->orderBy('name', 'asc');
     }
 }

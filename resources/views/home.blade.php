@@ -6,18 +6,18 @@
 <div class="bg-white py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Search Section -->
-        <div class="mb-8">
+        <div class="mb-8" x-data="searchComponent()">
             <h2 class="text-xl font-semibold mb-4">Search By:</h2>
             
-            <div class="flex gap-4 items-end" x-data="{ category: 'all', library: 'all', search: '' }">
+            <div class="flex gap-4 items-end">
                 <!-- Category Dropdown -->
                 <div class="flex-1">
                     <select x-model="category" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="all">All Categories</option>
-                        <option value="fiction">Fiction</option>
-                        <option value="non-fiction">Non-Fiction</option>
-                        <option value="reference">Reference</option>
-                        <option value="academic">Academic</option>
+                        <option value="all">All</option>
+                        <option value="book">Book</option>
+                        <option value="title">Title</option>
+                        <option value="author">Author</option>
+                        <option value="subject">Subject</option>
                     </select>
                 </div>
 
@@ -25,12 +25,9 @@
                 <div class="flex-1">
                     <select x-model="library" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="all">All Libraries</option>
-                        <option value="pasig-city">Pasig City Library</option>
-                        <option value="plp">PLP Library</option>
-                        <option value="pcist">PCIST Library</option>
-                        <option value="pshs">PSHS Library</option>
-                        <option value="rhs">RHS Library</option>
-                        <option value="city-hall">City Hall Library</option>
+                        @foreach($libraries as $lib)
+                            <option value="{{ $lib->id }}">{{ $lib->name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -53,13 +50,98 @@
 
                 <!-- Search Button -->
                 <button 
-                    @click="console.log('Search:', { category, library, search })"
+                    @click="performSearch()"
                     class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </button>
+            </div>
+            
+            <!-- Search Results Modal -->
+            <div x-show="showModal" 
+                 x-cloak
+                 class="fixed inset-0 z-50 overflow-y-auto" 
+                 @click.self="showModal = false">
+                <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                    <!-- Background overlay -->
+                    <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="showModal = false"></div>
+
+                    <!-- Modal panel -->
+                    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-2xl font-bold text-gray-900">Search Results</h3>
+                                <button @click="showModal = false" class="text-gray-400 hover:text-gray-500">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Loading State -->
+                            <div x-show="isLoading" class="text-center py-8">
+                                <svg class="animate-spin h-10 w-10 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <p class="mt-2 text-gray-600">Searching...</p>
+                            </div>
+
+                            <!-- Results -->
+                            <div x-show="!isLoading">
+                                <div x-show="searchResults.length === 0" class="text-center py-8">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <p class="mt-2 text-gray-600">No books found</p>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                                    <template x-for="book in searchResults" :key="book.id">
+                                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                                            <div class="flex gap-4">
+                                                <div x-show="book.cover_image" class="flex-shrink-0">
+                                                    <img :src="book.cover_image" :alt="book.title" class="w-20 h-28 object-cover rounded">
+                                                </div>
+                                                <div class="flex-1">
+                                                    <h4 class="text-lg font-semibold text-gray-900" x-text="book.title"></h4>
+                                                    <p class="text-sm text-gray-600 mt-1">
+                                                        <span class="font-medium">Author:</span> <span x-text="book.author"></span>
+                                                    </p>
+                                                    <p class="text-sm text-gray-600 mt-1" x-show="book.isbn">
+                                                        <span class="font-medium">ISBN:</span> <span x-text="book.isbn"></span>
+                                                    </p>
+                                                    <p class="text-sm text-gray-600 mt-1" x-show="book.category">
+                                                        <span class="font-medium">Category:</span> <span x-text="book.category"></span>
+                                                    </p>
+                                                    <div class="mt-2 flex items-center gap-4">
+                                                        <span class="text-sm" :class="book.status === 'available' ? 'text-green-600' : 'text-red-600'">
+                                                            <span class="font-medium">Status:</span> 
+                                                            <span x-text="book.status === 'available' ? 'Available' : 'On Loan'"></span>
+                                                        </span>
+                                                        <span class="text-sm text-gray-600" x-show="book.available_copies !== undefined">
+                                                            <span class="font-medium">Available:</span> 
+                                                            <span x-text="book.available_copies + ' / ' + book.total_copies"></span>
+                                                        </span>
+                                                    </div>
+                                                    <p class="text-sm text-gray-500 mt-2" x-show="book.description" x-text="book.description"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button @click="showModal = false" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -71,30 +153,14 @@
                     <h3 class="text-xl font-bold text-center mb-6">Libraries</h3>
                     
                     <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-gray-900">Pasig City Library</h4>
-                            <p class="text-sm text-gray-500">Public</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">PLP Library</h4>
-                            <p class="text-sm text-gray-500">University</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">PCIST Library</h4>
-                            <p class="text-sm text-gray-500">Technical</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">PSHS Library</h4>
-                            <p class="text-sm text-gray-500">High School</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">RHS Library</h4>
-                            <p class="text-sm text-gray-500">High School</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">City Hall Library</h4>
-                            <p class="text-sm text-gray-500">Government</p>
-                        </div>
+                        @foreach($libraries as $library)
+                            <div>
+                                <h4 class="font-semibold text-gray-900">{{ $library->name }}</h4>
+                                @if($library->website)
+                                    <a href="{{ $library->website }}" target="_blank" class="text-xs text-blue-600 hover:underline">Visit Website</a>
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -116,25 +182,25 @@
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Total Libraries -->
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                            <div class="text-4xl font-bold text-blue-600 mb-2">6</div>
+                            <div class="text-4xl font-bold text-blue-600 mb-2">{{ $statistics['total_libraries'] }}</div>
                             <div class="text-sm text-gray-600">Total Libraries</div>
                         </div>
 
                         <!-- Total Books -->
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                            <div class="text-4xl font-bold text-blue-600 mb-2">15,243</div>
+                            <div class="text-4xl font-bold text-blue-600 mb-2">{{ number_format($statistics['total_books']) }}</div>
                             <div class="text-sm text-gray-600">Total Books</div>
                         </div>
 
                         <!-- Available Books -->
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                            <div class="text-4xl font-bold text-blue-600 mb-2">12,890</div>
+                            <div class="text-4xl font-bold text-blue-600 mb-2">{{ number_format($statistics['available_books']) }}</div>
                             <div class="text-sm text-gray-600">Available Books</div>
                         </div>
 
                         <!-- On Loan -->
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                            <div class="text-4xl font-bold text-blue-600 mb-2">2,353</div>
+                            <div class="text-4xl font-bold text-blue-600 mb-2">{{ number_format($statistics['on_loan']) }}</div>
                             <div class="text-sm text-gray-600">On Loan</div>
                         </div>
                     </div>
@@ -143,4 +209,53 @@
         </div>
     </div>
 </div>
+
+<script>
+function searchComponent() {
+    return {
+        category: 'all',
+        library: 'all',
+        search: '',
+        showModal: false,
+        searchResults: [],
+        isLoading: false,
+        
+        performSearch() {
+            console.log('Search clicked');
+            
+            if (!this.search.trim()) {
+                alert('Please enter a search term');
+                return;
+            }
+            
+            this.isLoading = true;
+            this.showModal = true;
+            
+            fetch('{{ route("home.search") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    category: this.category,
+                    library: this.library,
+                    search: this.search
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Search results:', data);
+                this.searchResults = data.books || [];
+                this.isLoading = false;
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                alert('An error occurred while searching');
+                this.isLoading = false;
+            });
+        }
+    }
+}
+</script>
 @endsection

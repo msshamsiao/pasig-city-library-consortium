@@ -19,92 +19,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Seed Libraries
-        $this->seedLibraries();
+        $this->call([
+            LibrarySeeder::class,
+        ]);
         
         // Seed Activities
         $this->seedActivities();
         
         // Seed Statistics
         $this->seedStatistics();
-    }
-
-    /**
-     * Seed libraries data.
-     */
-    private function seedLibraries()
-    {
-        $libraries = [
-            [
-                'name' => 'Pasig City Library',
-                'type' => 'Public',
-                'address' => '123 Main Street, Pasig City, Metro Manila 1600',
-                'phone' => '+63 (02) 8641-1234',
-                'website' => 'www.pasigcitylibrary.gov.ph',
-                'contact_person' => 'Maria Santos',
-                'position' => 'Head Librarian',
-                'is_active' => true,
-                'order' => 1,
-            ],
-            [
-                'name' => 'PLP Library',
-                'type' => 'University',
-                'address' => '456 Education Avenue, Pasig City, Metro Manila 1601',
-                'phone' => '+63 (02) 8642-5678',
-                'website' => 'www.plp.edu.ph/library',
-                'contact_person' => 'Dr. Juan Cruz',
-                'position' => 'Library Director',
-                'is_active' => true,
-                'order' => 2,
-            ],
-            [
-                'name' => 'PCIST Library',
-                'type' => 'Technical',
-                'address' => '789 Technology Drive, Pasig City, Metro Manila 1602',
-                'phone' => '+63 (02) 8643-9012',
-                'website' => 'www.pcist.edu.ph/library',
-                'contact_person' => 'Engr. Ana Rodriguez',
-                'position' => 'Technical Services Librarian',
-                'is_active' => true,
-                'order' => 3,
-            ],
-            [
-                'name' => 'PSHS Library',
-                'type' => 'High School',
-                'address' => '321 Science Boulevard, Pasig City, Metro Manila 1603',
-                'phone' => '+63 (02) 8644-3456',
-                'website' => 'www.pshs.edu.ph/library',
-                'contact_person' => 'Dr. Roberto Garcia',
-                'position' => 'School Librarian',
-                'is_active' => true,
-                'order' => 4,
-            ],
-            [
-                'name' => 'RHS Library',
-                'type' => 'High School',
-                'address' => '654 Rizal Street, Pasig City, Metro Manila 1604',
-                'phone' => '+63 (02) 8645-7890',
-                'website' => 'www.rhs.edu.ph/library',
-                'contact_person' => 'Mrs. Carmen Dela Cruz',
-                'position' => 'Library Coordinator',
-                'is_active' => true,
-                'order' => 5,
-            ],
-            [
-                'name' => 'City Hall Library',
-                'type' => 'Government',
-                'address' => 'Pasig City Hall, Capitol Avenue, Pasig City, Metro Manila 1605',
-                'phone' => '+63 (02) 8646-1234',
-                'website' => 'www.pasigcity.gov.ph/library',
-                'contact_person' => 'Atty. Jose Mercado',
-                'position' => 'Information Officer',
-                'is_active' => true,
-                'order' => 6,
-            ],
-        ];
-
-        foreach ($libraries as $library) {
-            Library::create($library);
-        }
     }
 
     /**
