@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Library;
+use App\Models\BookRequest;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -20,10 +21,11 @@ class DashboardController extends Controller
         
         // Dashboard statistics
         $stats = [
-            'books_available' => Book::where('status', 'available')->count(),
-            'members' => User::where('status', 'active')->count(),
-            'books_borrowed' => Book::where('status', 'borrowed')->count(),
-            'pending_returns' => Book::where('due_date', '<', now())->count(),
+            'total_library_members' => User::where('role', 'member_librarian')->count(),
+            'total_books' => Book::count(),
+            'total_active_members' => User::where('role', 'borrower')->count(),
+            'book_reservations' => BookRequest::where('status', 'pending')->count(),
+            'completed_transactions' => BookRequest::where('status', 'completed')->count(),
         ];
         
         return view('admin.dashboard', compact('user', 'library', 'stats'));
