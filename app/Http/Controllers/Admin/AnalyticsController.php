@@ -15,17 +15,24 @@ class AnalyticsController extends Controller
     {
         // Get all member libraries with their statistics
         $libraries = Library::active()->get()->map(function($library) {
+            // Count members associated with this library
+            $memberCount = User::where('library_id', $library->id)
+                ->where('role', 'borrower')
+                ->count();
+
+            // Count book requests from users of this library
+            $userIds = User::where('library_id', $library->id)->pluck('id');
+            $borrowedCount = BookRequest::whereIn('user_id', $userIds)
+                ->whereIn('status', ['approved', 'borrowed'])
+                ->count();
+
             return [
                 'id' => $library->id,
                 'name' => $library->name,
                 'address' => $library->address,
-                'total_books' => Book::where('library_id', $library->id)->count(),
-                'books_borrowed' => BookRequest::where('library_id', $library->id)
-                    ->whereIn('status', ['approved', 'borrowed'])
-                    ->count(),
-                'total_members' => User::where('library_id', $library->id)
-                    ->where('role', 'borrower')
-                    ->count(),
+                'total_books' => 0, // Books are not library-specific in current schema
+                'books_borrowed' => $borrowedCount,
+                'total_members' => $memberCount,
             ];
         });
 
