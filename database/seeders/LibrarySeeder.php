@@ -16,6 +16,7 @@ class LibrarySeeder extends Seeder
         $libraries = [
             [
                 'name' => 'Pasig City Library and Learning Resource Center',
+                'acronym' => 'PCLLRC',
                 'address' => 'Pasig City, Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://web.facebook.com/search/top/?q=pasig+city+library',
@@ -25,6 +26,7 @@ class LibrarySeeder extends Seeder
             ],
             [
                 'name' => 'PLP - Pamantasan ng Lungsod ng Pasig',
+                'acronym' => 'PLP',
                 'address' => 'Pasig City, Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://plpasig.edu.ph/campus-life/library-services/',
@@ -34,6 +36,7 @@ class LibrarySeeder extends Seeder
             ],
             [
                 'name' => 'Pasig City Institute of Science and Technology',
+                'acronym' => 'PCIST',
                 'address' => 'Pasig City, Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://web.facebook.com/search/top/?q=pcist',
@@ -43,6 +46,7 @@ class LibrarySeeder extends Seeder
             ],
             [
                 'name' => 'Pasig City Science High School Library',
+                'acronym' => 'PCSHS',
                 'address' => 'Pasig City, Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://pasigcitysciencehs.wordpress.com/',
@@ -52,6 +56,7 @@ class LibrarySeeder extends Seeder
             ],
             [
                 'name' => 'Pasig City Hall Library',
+                'acronym' => 'PCHL',
                 'address' => 'Pasig City Hall, Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://pasigcityhalllibrary.wordpress.com/',

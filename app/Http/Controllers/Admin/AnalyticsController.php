@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Library;
-use App\Models\Book;
-use App\Models\BookRequest;
+use App\Models\Holding;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -23,17 +22,15 @@ class AnalyticsController extends Controller
                 ->where('role', 'borrower')
                 ->count();
 
-            // Count book requests from users of this library
+            // Count borrowed books from users of this library
             $userIds = User::where('library_id', $library->id)->pluck('id');
-            $borrowedCount = BookRequest::whereIn('user_id', $userIds)
-                ->whereIn('status', ['approved', 'borrowed'])
-                ->count();
+            $borrowedCount = 0; // Removed book requests functionality
 
             return [
                 'id' => $library->id,
                 'name' => $library->name,
                 'address' => $library->address,
-                'total_books' => Book::count(), // Shared consortium books
+                'total_books' => Holding::count(), // Shared consortium books
                 'books_borrowed' => $borrowedCount,
                 'total_members' => $memberCount,
             ];
@@ -42,8 +39,8 @@ class AnalyticsController extends Controller
         // Overall statistics - dynamically calculated
         $overallStats = [
             'total_libraries' => Library::count(),
-            'total_books' => Book::count(),
-            'total_borrowed' => BookRequest::whereIn('status', ['approved', 'borrowed'])->count(),
+            'total_books' => Holding::count(),
+            'total_borrowed' => 0, // Removed book requests functionality
             'total_members' => User::where('role', 'borrower')->count(),
         ];
 

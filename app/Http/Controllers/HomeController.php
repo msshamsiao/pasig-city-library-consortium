@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Library;
-use App\Models\Book;
-use App\Models\BookRequest;
+use App\Models\Holding;
 
 class HomeController extends Controller
 {
@@ -18,8 +17,8 @@ class HomeController extends Controller
         $libraries = Library::active()->orderBy('name')->get();
         
         // Calculate dynamic statistics from database
-        $totalBooks = Book::count();
-        $totalReservations = BookRequest::whereIn('status', ['pending', 'approved'])->count();
+        $totalBooks = Holding::count();
+        $totalReservations = 0; // Removed book requests functionality
         
         $statistics = [
             'total_libraries' => $libraries->count(),
@@ -39,7 +38,7 @@ class HomeController extends Controller
         $library = $request->input('library', 'all');
         $search = $request->input('search', '');
 
-        $query = Book::query();
+        $query = Holding::query();
 
         // Filter by search term based on category
         if (!empty($search)) {

@@ -72,58 +72,40 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Schedule</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Book</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pickup Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($reservations as $reservation)
                             <tr class="reservation-row" data-status="{{ $reservation->status }}">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4">
                                     <div class="flex items-center">
-                                        @php
-                                            $icons = [
-                                                'book' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>',
-                                                'journal' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>',
-                                                'cd' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>',
-                                                'ebook' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>'
-                                            ];
-                                            $icon = $icons[$reservation->material_type] ?? $icons['book'];
-                                            // Extract title from admin_notes if exists
-                                            $materialTitle = '';
-                                            if ($reservation->admin_notes && strpos($reservation->admin_notes, 'Material:') !== false) {
-                                                preg_match('/Material:\s*(.+?)(?:\n|$)/', $reservation->admin_notes, $matches);
-                                                $materialTitle = $matches[1] ?? '';
-                                            }
-                                        @endphp
                                         <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            {!! $icon !!}
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                                         </svg>
                                         <div>
-                                            <span class="text-sm font-medium text-gray-900 capitalize">{{ $reservation->material_type }}</span>
-                                            @if($materialTitle)
-                                                <p class="text-xs text-gray-500">{{ Str::limit($materialTitle, 40) }}</p>
-                                            @endif
+                                            <div class="text-sm font-medium text-gray-900">{{ Str::limit($reservation->holding->title, 40) }}</div>
+                                            <div class="text-xs text-gray-500">by {{ $reservation->holding->author }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ \Carbon\Carbon::parse($reservation->date_schedule)->format('M d, Y') }}
+                                    {{ \Carbon\Carbon::parse($reservation->borrowed_date)->format('M d, Y h:i A') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $reservation->date_time }}
+                                    {{ \Carbon\Carbon::parse($reservation->due_date)->format('M d, Y') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $statusColors = [
-                                            'pending' => 'bg-yellow-100 text-yellow-800',
-                                            'approved' => 'bg-green-100 text-green-800',
-                                            'rejected' => 'bg-red-100 text-red-800',
-                                            'completed' => 'bg-blue-100 text-blue-800',
+                                            'reserved' => 'bg-yellow-100 text-yellow-800',
+                                            'borrowed' => 'bg-blue-100 text-blue-800',
+                                            'returned' => 'bg-green-100 text-green-800',
+                                            'overdue' => 'bg-red-100 text-red-800',
                                         ];
                                         $color = $statusColors[$reservation->status] ?? 'bg-gray-100 text-gray-800';
                                     @endphp
@@ -131,11 +113,8 @@
                                         {{ ucfirst($reservation->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $reservation->created_at->format('M d, Y') }}
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                    @if($reservation->status === 'pending')
+                                    @if($reservation->status === 'reserved')
                                         <form action="{{ route('borrower.reservations.cancel', $reservation) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
@@ -175,19 +154,48 @@
             </button>
         </div>
 
-        <form action="{{ route('borrower.reservations.store') }}" method="POST">
+        <form action="{{ route('borrower.reservations.store') }}" method="POST" id="reservationForm">
             @csrf
             
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Material Type</label>
-                <select name="material_type" required 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Select material type</option>
-                    <option value="book">Book</option>
-                    <option value="journal">Journal</option>
-                    <option value="cd">CD/DVD</option>
-                    <option value="ebook">E-Book</option>
-                </select>
+            <!-- Search Section -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Search for Book</label>
+                <div class="relative">
+                    <input type="text" id="bookSearch" 
+                           placeholder="Search by title, author, or ISBN..."
+                           class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResults" class="mb-6 hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select Book</label>
+                <div id="booksList" class="max-h-64 overflow-y-auto border border-gray-200 rounded-lg">
+                    <!-- Books will be loaded here via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Selected Book Display -->
+            <div id="selectedBookDisplay" class="mb-6 hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Selected Book</label>
+                <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-medium text-gray-900" id="selectedTitle"></h4>
+                            <p class="text-sm text-gray-600" id="selectedAuthor"></p>
+                            <p class="text-xs text-gray-500" id="selectedISBN"></p>
+                        </div>
+                        <button type="button" onclick="clearBookSelection()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <input type="hidden" name="holding_id" id="selectedHoldingId" required>
             </div>
 
             <div class="mb-4">
@@ -207,9 +215,9 @@
                         class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
                     Cancel
                 </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Submit Request
+                <button type="submit" id="submitBtn" disabled
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    Reserve Book
                 </button>
             </div>
         </form>
@@ -239,6 +247,88 @@
 </div>
 
 <script>
+let searchTimeout;
+let selectedBook = null;
+
+// Book Search
+document.getElementById('bookSearch')?.addEventListener('input', function(e) {
+    const query = e.target.value.trim();
+    
+    clearTimeout(searchTimeout);
+    
+    if (query.length < 2) {
+        document.getElementById('searchResults').classList.add('hidden');
+        return;
+    }
+    
+    searchTimeout = setTimeout(() => {
+        searchBooks(query);
+    }, 300);
+});
+
+function searchBooks(query) {
+    fetch(`/api/holdings/search?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            displaySearchResults(data);
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+        });
+}
+
+function displaySearchResults(books) {
+    const resultsDiv = document.getElementById('searchResults');
+    const booksList = document.getElementById('booksList');
+    
+    if (books.length === 0) {
+        booksList.innerHTML = '<p class="p-4 text-gray-500 text-sm">No books found</p>';
+        resultsDiv.classList.remove('hidden');
+        return;
+    }
+    
+    booksList.innerHTML = books.map(book => `
+        <div onclick='selectBook(${JSON.stringify(book)})' 
+             class="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0">
+            <h4 class="font-medium text-gray-900 text-sm">${book.title}</h4>
+            <p class="text-xs text-gray-600">by ${book.author}</p>
+            <div class="flex justify-between items-center mt-1">
+                <span class="text-xs text-gray-500">ISBN: ${book.isbn}</span>
+                <span class="text-xs ${book.available_copies > 0 ? 'text-green-600' : 'text-red-600'}">
+                    ${book.available_copies} available
+                </span>
+            </div>
+        </div>
+    `).join('');
+    
+    resultsDiv.classList.remove('hidden');
+}
+
+function selectBook(book) {
+    selectedBook = book;
+    
+    // Update selected book display
+    document.getElementById('selectedTitle').textContent = book.title;
+    document.getElementById('selectedAuthor').textContent = `by ${book.author}`;
+    document.getElementById('selectedISBN').textContent = `ISBN: ${book.isbn}`;
+    document.getElementById('selectedHoldingId').value = book.id;
+    
+    // Show selected book, hide search results
+    document.getElementById('selectedBookDisplay').classList.remove('hidden');
+    document.getElementById('searchResults').classList.add('hidden');
+    document.getElementById('bookSearch').value = '';
+    
+    // Enable submit button
+    document.getElementById('submitBtn').disabled = false;
+}
+
+function clearBookSelection() {
+    selectedBook = null;
+    document.getElementById('selectedBookDisplay').classList.add('hidden');
+    document.getElementById('selectedHoldingId').value = '';
+    document.getElementById('submitBtn').disabled = true;
+}
+
 function filterReservations(status) {
     const rows = document.querySelectorAll('.reservation-row');
     const tabs = document.querySelectorAll('.tab-btn');

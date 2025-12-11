@@ -9,7 +9,6 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\MemberController;
-use App\Http\Controllers\Admin\BookRequestController;
 use App\Http\Controllers\Admin\LibraryController;
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\StatisticController;
@@ -85,12 +84,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     Route::post('members/{member}/suspend', [MemberController::class, 'suspend'])->name('members.suspend');
     Route::post('members/{member}/activate', [MemberController::class, 'activate'])->name('members.activate');
     
-    // Book Requests Management
-    Route::resource('book-requests', BookRequestController::class);
-    Route::post('book-requests/{bookRequest}/approve', [BookRequestController::class, 'approve'])->name('book-requests.approve');
-    Route::post('book-requests/{bookRequest}/reject', [BookRequestController::class, 'reject'])->name('book-requests.reject');
-    Route::post('book-requests/{bookRequest}/complete', [BookRequestController::class, 'complete'])->name('book-requests.complete');
-    
     // Libraries Management
     Route::resource('libraries', LibraryController::class);
     Route::post('libraries/{id}/restore', [LibraryController::class, 'restore'])->name('libraries.restore');
@@ -141,11 +134,6 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
     Route::get('/members/{member}/edit', [\App\Http\Controllers\Librarian\MemberController::class, 'edit'])->name('members.edit');
     Route::put('/members/{member}', [\App\Http\Controllers\Librarian\MemberController::class, 'update'])->name('members.update');
     Route::post('/members/upload', [\App\Http\Controllers\Librarian\MemberController::class, 'upload'])->name('members.upload');
-    
-    // Book Requests (Approve/Reject)
-    Route::get('/book-requests', [\App\Http\Controllers\Librarian\BookRequestController::class, 'index'])->name('book-requests.index');
-    Route::post('/book-requests/{bookRequest}/approve', [\App\Http\Controllers\Librarian\BookRequestController::class, 'approve'])->name('book-requests.approve');
-    Route::post('/book-requests/{bookRequest}/reject', [\App\Http\Controllers\Librarian\BookRequestController::class, 'reject'])->name('book-requests.reject');
     
     // Books Management (Upload Only)
     Route::get('/books', [\App\Http\Controllers\Librarian\BookController::class, 'index'])->name('books.index');

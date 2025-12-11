@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Library;
-use App\Models\Book;
+use App\Models\Holding;
 use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,7 +18,7 @@ class ArchiveController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
 
-        $archivedBooks = Book::onlyTrashed()
+        $archivedBooks = Holding::onlyTrashed()
             ->orderBy('deleted_at', 'desc')
             ->paginate(10);
 

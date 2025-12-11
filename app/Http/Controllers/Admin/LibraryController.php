@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Library;
-use App\Models\Book;
+use App\Models\Holding;
 use App\Models\User;
-use App\Models\BookRequest;
 use Illuminate\Http\Request;
 
 class LibraryController extends Controller
@@ -23,13 +22,11 @@ class LibraryController extends Controller
             // Get user IDs from this library
             $userIds = User::where('library_id', $library->id)->pluck('id');
 
-            // Count active book requests from users of this library
-            $activeRequests = BookRequest::whereIn('user_id', $userIds)
-                ->whereIn('status', ['approved', 'borrowed'])
-                ->count();
+            // Count active requests from users of this library
+            $activeRequests = 0; // Removed book requests functionality
 
             // Add statistics to library object
-            $library->total_books = Book::count(); // Shared consortium books
+            $library->total_books = Holding::count(); // Shared consortium books
             $library->total_members = $totalMembers;
             $library->active_requests = $activeRequests;
 
@@ -38,7 +35,7 @@ class LibraryController extends Controller
 
         // Calculate overall statistics
         $totalLibraries = Library::count();
-        $totalBooks = Book::count();
+        $totalBooks = Holding::count();
         $totalMembers = User::where('role', 'borrower')->count();
 
         return view('admin.libraries', compact('libraries', 'totalLibraries', 'totalBooks', 'totalMembers'));

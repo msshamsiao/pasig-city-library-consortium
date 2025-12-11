@@ -16,3 +16,19 @@ Route::middleware('cors')->group(function () {
     Route::post('/register', 'AuthController@register');
     Route::post('/logout', 'AuthController@logout')->middleware('auth:api');
 });
+
+// Holdings search endpoint
+Route::get('/holdings/search', function (Request $request) {
+    $query = $request->input('q');
+    
+    $holdings = \App\Models\Holding::where('status', 'available')
+        ->where(function($q) use ($query) {
+            $q->where('title', 'LIKE', "%{$query}%")
+              ->orWhere('author', 'LIKE', "%{$query}%")
+              ->orWhere('isbn', 'LIKE', "%{$query}%");
+        })
+        ->limit(10)
+        ->get(['id', 'title', 'author', 'isbn', 'available_copies']);
+    
+    return response()->json($holdings);
+});

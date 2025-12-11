@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Holding;
+use App\Models\Library;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -16,10 +19,10 @@ class DashboardController extends Controller
         
         // Dashboard statistics
         $stats = [
-            'books_available' => Book::available()->count(),
+            'books_available' => Holding::available()->count(),
             'members' => User::where('status', 'active')->count(),
-            'books_borrowed' => Book::borrowed()->count(),
-            'pending_returns' => Book::where('due_date', '<', now())->count(),
+            'books_borrowed' => Holding::borrowed()->count(),
+            'pending_returns' => Holding::where('due_date', '<', now())->count(),
         ];
         
         return view('admin.dashboard', compact('user', 'library', 'stats'));

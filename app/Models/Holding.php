@@ -6,33 +6,39 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Book extends Model
+class Holding extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
+    
     protected $fillable = [
+        'holding_branch_id',
         'title',
         'author',
         'isbn',
         'category',
         'status',
-        'borrowed_by',
-        'borrowed_date',
-        'due_date',
         'total_copies',
         'available_copies',
         'description',
         'cover_image',
     ];
 
-    protected $casts = [
-        'borrowed_date' => 'date',
-        'due_date' => 'date',
-    ];
-
-    // Relationship with user who borrowed
-    public function borrower()
+    // Relationship with library (holding branch)
+    public function library()
     {
-        return $this->belongsTo(User::class, 'borrowed_by');
+        return $this->belongsTo(Library::class, 'holding_branch_id');
+    }
+
+    // Relationship with borrowings
+    public function borrowings()
+    {
+        return $this->hasMany(Borrowing::class, 'holding_id');
+    }
+
+    // Current active borrowing
+    public function currentBorrowing()
+    {
+        return $this->hasOne(Borrowing::class, 'holding_id')->where('status', 'borrowed');
     }
 
     // Scopes
@@ -56,7 +62,7 @@ class Book extends Model
         return $query->where('category', $category);
     }
 
-    // Check if book is available
+    // Check if holding is available
     public function isAvailable()
     {
         return $this->status === 'available' && $this->available_copies > 0;

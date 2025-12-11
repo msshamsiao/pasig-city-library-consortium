@@ -3,16 +3,25 @@
 namespace App\Http\Controllers\Borrower;
 
 use App\Http\Controllers\Controller;
-use App\Models\BookRequest;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
     public function index()
     {
-        $reservations = BookRequest::where('user_id', auth()->id())
-            ->latest()
-            ->paginate(20);
+        // Get member record
+        $member = \App\Models\Member::where('user_id', auth()->id())->first();
+        
+        if (!$member) {
+            $reservations = collect();
+        } else {
+            // Get borrowings with reserved status
+            $reservations = \App\Models\Borrowing::with('holding')
+                ->where('member_id', $member->id)
+                ->whereIn('status', ['reserved', 'borrowed'])
+                ->latest()
+                ->get();
+        }
         
         return view('borrower.reservations.index', compact('reservations'));
     }
@@ -20,51 +29,47 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'material_type' => 'required|in:book,journal,cd,ebook',
+            'holding_id' => 'required|exists:holdings,id',
             'date_schedule' => 'required|date|after_or_equal:today',
             'date_time' => 'required',
-            'book_info' => 'nullable|string',
         ]);
 
-        // Store book information in admin_notes if provided
-        if (!empty($validated['book_info'])) {
-            $bookInfo = json_decode($validated['book_info'], true);
-            if ($bookInfo) {
-                $infoText = "Material: " . ($bookInfo['title'] ?? 'N/A');
-                if (!empty($bookInfo['author'])) {
-                    $infoText .= "\nAuthor: " . $bookInfo['author'];
-                }
-                if (!empty($bookInfo['isbn'])) {
-                    $infoText .= "\nISBN: " . $bookInfo['isbn'];
-                }
-                $validated['admin_notes'] = $infoText;
-            }
+        // Check if user has a member record
+        $member = \App\Models\Member::where('user_id', auth()->id())->first();
+        
+        if (!$member) {
+            return redirect()->route('borrower.reservations.index')
+                ->with('error', 'You must be a registered member to reserve books. Please contact the librarian.');
         }
 
-        $validated['user_id'] = auth()->id();
-        $validated['status'] = 'pending';
-        unset($validated['book_info']); // Remove book_info as it's not a database field
+        // Check if the holding is available
+        $holding = \App\Models\Holding::findOrFail($validated['holding_id']);
+        
+        if ($holding->available_copies < 1) {
+            return redirect()->route('borrower.reservations.index')
+                ->with('error', 'This book is currently not available for reservation.');
+        }
 
-        BookRequest::create($validated);
+        // Create borrowing record with reserved status
+        $borrowDate = $validated['date_schedule'] . ' ' . $validated['date_time'];
+        $dueDate = date('Y-m-d', strtotime($borrowDate . ' + 14 days'));
+
+        \App\Models\Borrowing::create([
+            'holding_id' => $validated['holding_id'],
+            'member_id' => $member->id,
+            'borrowed_date' => $borrowDate,
+            'due_date' => $dueDate,
+            'status' => 'reserved',
+            'notes' => 'Reserved via online system. Scheduled pickup: ' . $borrowDate,
+        ]);
 
         return redirect()->route('borrower.reservations.index')
-            ->with('success', 'Reservation request submitted successfully. Please wait for librarian approval.');
+            ->with('success', 'Book reserved successfully! Please pick it up on your scheduled date and time.');
     }
 
-    public function destroy(BookRequest $reservation)
+    public function destroy($reservation)
     {
-        // Check if reservation belongs to current user
-        if ($reservation->user_id != auth()->id()) {
-            abort(403);
-        }
-
-        // Only allow cancelling pending requests
-        if ($reservation->status != 'pending') {
-            return back()->with('error', 'You can only cancel pending reservations.');
-        }
-
-        $reservation->delete();
-
-        return back()->with('success', 'Reservation cancelled successfully.');
+        // Book requests functionality has been removed
+        return back()->with('error', 'Book requests functionality is no longer available.');
     }
 }

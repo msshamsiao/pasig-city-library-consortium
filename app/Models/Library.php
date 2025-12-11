@@ -15,6 +15,7 @@ class Library extends Model
      */
     protected $fillable = [
         'name',
+        'acronym',
         'address',
         'phone',
         'website',
@@ -37,5 +38,13 @@ class Library extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Get the holdings for this library.
+     */
+    public function holdings()
+    {
+        return $this->hasMany(Holding::class, 'holding_branch_id');
     }
 }
