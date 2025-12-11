@@ -10,10 +10,11 @@ class BookRequestController extends Controller
 {
     public function index()
     {
-        $bookRequests = BookRequest::whereHas('book', function($query) {
+        // Show all book requests - librarians can view all requests from their library's users
+        $bookRequests = BookRequest::whereHas('user', function($query) {
                 $query->where('library_id', auth()->user()->library_id);
             })
-            ->with(['user', 'book'])
+            ->with('user')
             ->latest()
             ->paginate(20);
         
@@ -22,32 +23,31 @@ class BookRequestController extends Controller
 
     public function approve(BookRequest $bookRequest)
     {
-        // Check if request belongs to librarian's library
-        if ($bookRequest->book->library_id != auth()->user()->library_id) {
+        // Check if request belongs to user from librarian's library
+        if ($bookRequest->user->library_id != auth()->user()->library_id) {
             abort(403);
         }
 
         $bookRequest->update([
             'status' => 'approved',
-            'approved_at' => now(),
-            'approved_by' => auth()->id()
+            'admin_notes' => 'Approved by ' . auth()->user()->name
         ]);
 
-        return back()->with('success', 'Book request approved successfully.');
+        return back()->with('success', 'Request approved successfully.');
     }
 
     public function reject(Request $request, BookRequest $bookRequest)
     {
-        // Check if request belongs to librarian's library
-        if ($bookRequest->book->library_id != auth()->user()->library_id) {
+        // Check if request belongs to user from librarian's library
+        if ($bookRequest->user->library_id != auth()->user()->library_id) {
             abort(403);
         }
 
         $bookRequest->update([
             'status' => 'rejected',
-            'rejection_reason' => $request->input('reason')
+            'admin_notes' => $request->input('reason') ?? 'Request rejected'
         ]);
 
-        return back()->with('success', 'Book request rejected.');
+        return back()->with('success', 'Request rejected.');
     }
 }
