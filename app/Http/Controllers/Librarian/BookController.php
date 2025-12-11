@@ -10,8 +10,8 @@ class BookController extends Controller
 {
     public function index()
     {
-        $books = Book::where('library_id', auth()->user()->library_id)
-            ->latest()
+        // Show all books since they are centralized across all libraries
+        $books = Book::latest()
             ->paginate(20);
         
         return view('librarian.books.index', compact('books'));
@@ -27,16 +27,14 @@ class BookController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'isbn' => 'nullable|string|max:20|unique:books,isbn',
-            'publisher' => 'nullable|string|max:255',
-            'publication_year' => 'nullable|integer|min:1000|max:' . date('Y'),
+            'isbn' => 'required|string|max:20|unique:books,isbn',
             'category' => 'required|string|max:100',
-            'quantity' => 'required|integer|min:1',
+            'total_copies' => 'required|integer|min:1',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|string|max:255',
         ]);
 
-        $validated['library_id'] = auth()->user()->library_id;
-        $validated['available_quantity'] = $validated['quantity'];
+        $validated['available_copies'] = $validated['total_copies'];
         $validated['status'] = 'available';
 
         Book::create($validated);
