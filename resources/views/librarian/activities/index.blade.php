@@ -24,16 +24,41 @@
         </div>
         @endif
 
+        <!-- Filter -->
+        <div class="mb-6 bg-white shadow-sm rounded-lg p-4">
+            <form method="GET" action="{{ route('librarian.activities.index') }}" class="flex items-end gap-4">
+                <div class="flex-1">
+                    <label for="library" class="block text-sm font-medium text-gray-700 mb-2">Filter by Library</label>
+                    <select name="library" id="library" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">All Libraries</option>
+                        @foreach($libraries as $library)
+                            <option value="{{ $library->id }}" {{ request('library') == $library->id ? 'selected' : '' }}>
+                                {{ $library->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Filter
+                </button>
+                @if(request('library'))
+                    <a href="{{ route('librarian.activities.index') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                        Clear
+                    </a>
+                @endif
+            </form>
+        </div>
+
         <!-- Activities Table -->
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -46,7 +71,14 @@
                             <div class="text-xs text-gray-500">{{ Str::limit($activity->description, 50) }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $activity->activity_date->format('M d, Y') }}</div>
+                            <div class="text-sm text-gray-900">
+                                {{ $activity->start_date ? \Carbon\Carbon::parse($activity->start_date)->format('M d, Y') : ($activity->activity_date->format('M d, Y')) }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">
+                                {{ $activity->end_date ? \Carbon\Carbon::parse($activity->end_date)->format('M d, Y') : 'N/A' }}
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">
@@ -59,15 +91,6 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">{{ $activity->location ?? 'N/A' }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">
-                                @if($activity->max_participants)
-                                    <span class="font-medium">{{ $activity->current_participants ?? 0 }}</span> / {{ $activity->max_participants }}
-                                @else
-                                    Unlimited
-                                @endif
-                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 

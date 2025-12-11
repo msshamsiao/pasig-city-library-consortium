@@ -8,13 +8,21 @@ use Illuminate\Http\Request;
 
 class ActivityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $activities = Activity::where('library_id', auth()->user()->library_id)
-            ->latest()
-            ->paginate(20);
+        $query = Activity::where('library_id', auth()->user()->library_id);
         
-        return view('librarian.activities.index', compact('activities'));
+        // Filter by library if provided
+        if ($request->filled('library')) {
+            $query->where('library_id', $request->library);
+        }
+        
+        $activities = $query->latest()->paginate(20);
+        
+        // Get libraries for filter dropdown
+        $libraries = \App\Models\Library::orderBy('name')->get();
+        
+        return view('librarian.activities.index', compact('activities', 'libraries'));
     }
 
     public function create()
