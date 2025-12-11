@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
         // Seed Libraries
         $this->call([
             LibrarySeeder::class,
+            MemberSeeder::class,
         ]);
         
         // Seed Activities
