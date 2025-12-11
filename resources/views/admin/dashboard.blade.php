@@ -12,25 +12,6 @@
             <p class="text-gray-600 mt-1">Manage your library operations</p>
         </div>
 
-        <!-- User Profile Card -->
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div class="flex items-start justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                        {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900">{{ auth()->user()->name ?? 'Juan Dela Cruz' }}</h2>
-                        <p class="text-gray-600">{{ auth()->user()->email ?? 'juan.cruz@email.com' }}</p>
-                        <p class="text-gray-600">{{ auth()->user()->phone ?? '09123456789' }}</p>
-                    </div>
-                </div>
-                <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                    Standard Member
-                </span>
-            </div>
-        </div>
-
         <!-- Library Dashboard Stats -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div class="flex items-center gap-2 mb-6">
@@ -93,14 +74,53 @@
             </div>
         </div>
 
-        <!-- Account Details -->
+        <!-- Super Admin Profile & Account Details -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div class="flex items-center gap-2 mb-4">
+            <div class="flex items-center gap-2 mb-6">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
-                <h3 class="text-xl font-bold text-gray-900">Account Details</h3>
+                <h3 class="text-xl font-bold text-gray-900">
+                    @if(auth()->user()->isSuperAdmin())
+                        Super Admin Details
+                    @else
+                        Account Details
+                    @endif
+                </h3>
             </div>
+
+            <!-- Profile Section -->
+            <div class="flex items-start justify-between mb-6 pb-6 border-b border-gray-200">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                        {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">{{ auth()->user()->name ?? 'Juan Dela Cruz' }}</h2>
+                        <p class="text-gray-600">{{ auth()->user()->email ?? 'juan.cruz@email.com' }}</p>
+                        <p class="text-gray-600">{{ auth()->user()->phone ?? '09123456789' }}</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                        @if(auth()->user()->isSuperAdmin())
+                            Super Admin
+                        @elseif(auth()->user()->isMemberLibrarian())
+                            Member Librarian
+                        @else
+                            Standard Member
+                        @endif
+                    </span>
+                    <a href="{{ route('profile.edit') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Edit Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Account Details Section -->
             <div class="space-y-3">
                 <div class="flex justify-between">
                     <span class="text-gray-600">Member ID:</span>
