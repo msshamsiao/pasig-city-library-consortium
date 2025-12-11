@@ -45,13 +45,13 @@
                     
                     <!-- Logo -->
                     <div class="ml-6 flex-shrink-0">
-                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                        <div class="border border-gray-200 rounded-lg p-3 bg-white">
                             @if($library->logo)
-                                <img src="{{ asset('storage/' . $library->logo) }}" alt="{{ $library->name }} Logo" class="w-24 h-24 object-contain">
+                                <img src="{{ asset('storage/' . $library->logo) }}" alt="{{ $library->name }} Logo" class="w-16 h-16 object-contain">
                             @else
-                                <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="w-24 h-24 object-contain">
+                                <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="w-16 h-16 object-contain">
                             @endif
-                            <p class="text-center text-xs text-gray-500 mt-2">Logo</p>
+                            <p class="text-center text-xs text-gray-500 mt-1">Logo</p>
                         </div>
                     </div>
                 </div>
