@@ -10,7 +10,10 @@ class LibraryController extends Controller
 {
     public function index()
     {
-        return view('admin.libraries');
+        // Get all libraries with pagination
+        $libraries = Library::orderBy('name', 'asc')->paginate(10);
+
+        return view('admin.libraries', compact('libraries'));
     }
 
     public function create()

@@ -10,7 +10,12 @@ class ActivityController extends Controller
 {
     public function index()
     {
-        return view('admin.activities');
+        // Get all activities with library information, ordered by date
+        $activities = Activity::with('library')
+            ->orderBy('date', 'desc')
+            ->paginate(15);
+
+        return view('admin.activities', compact('activities'));
     }
 
     public function create()
