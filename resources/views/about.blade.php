@@ -38,14 +38,9 @@
                     <div class="flex items-start gap-8">
                         <!-- Logo Image -->
                         <div class="flex-shrink-0">
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50">
-                                <svg class="w-32 h-32 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="4" y="4" width="4" height="16" rx="1"/>
-                                    <rect x="10" y="4" width="4" height="16" rx="1"/>
-                                    <rect x="16" y="4" width="4" height="16" rx="1"/>
-                                    <rect x="10" y="8" width="4" height="8" fill="white"/>
-                                </svg>
-                                <p class="text-center text-sm text-gray-600 mt-4">PLCC Official Logo</p>
+                            <div class="border border-gray-200 rounded-lg p-8 bg-white">
+                                <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Official Logo" class="w-48 h-auto">
+                                <p class="text-center text-sm text-gray-600 mt-4 font-medium">PCLC Official Logo</p>
                             </div>
                         </div>
 
