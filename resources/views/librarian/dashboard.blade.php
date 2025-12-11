@@ -50,11 +50,11 @@
         </div>
     </div>
 
-    <!-- Books Borrowed -->
+    <!-- Books on Reserve -->
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm">Books on Loan</p>
+                <p class="text-gray-500 text-sm">Books on Reserve</p>
                 <p class="text-3xl font-bold text-gray-800">{{ $stats['books_borrowed'] ?? 0 }}</p>
             </div>
             <div class="bg-purple-100 rounded-full p-3">
@@ -123,32 +123,5 @@
             @endforelse
         </div>
     </div>
-</div>
-
-<!-- Library Information -->
-<div class="bg-white rounded-lg shadow p-6">
-    <h3 class="text-lg font-semibold mb-4">Your Library</h3>
-    @if(auth()->user()->library)
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <p class="text-sm text-gray-500">Library Name</p>
-                <p class="font-medium">{{ auth()->user()->library->name }}</p>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">Address</p>
-                <p class="font-medium">{{ auth()->user()->library->address }}</p>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">Phone</p>
-                <p class="font-medium">{{ auth()->user()->library->phone }}</p>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">Website</p>
-                <p class="font-medium">{{ auth()->user()->library->website ?? 'N/A' }}</p>
-            </div>
-        </div>
-    @else
-        <p class="text-gray-500">No library assigned</p>
-    @endif
 </div>
 @endsection
