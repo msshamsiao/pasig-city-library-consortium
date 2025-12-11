@@ -93,6 +93,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     
     // Libraries Management
     Route::resource('libraries', LibraryController::class);
+    Route::post('libraries/{id}/restore', [LibraryController::class, 'restore'])->name('libraries.restore');
     
     // Activities Management
     Route::resource('activities', ActivityController::class);

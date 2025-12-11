@@ -11,10 +11,17 @@ use Illuminate\Http\Request;
 
 class LibraryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Get libraries based on filter (active or archived)
+        $filter = $request->get('filter', 'active');
+        
+        $librariesQuery = $filter === 'archived' 
+            ? Library::onlyTrashed() 
+            : Library::query();
+            
         // Get all libraries with their statistics
-        $libraries = Library::orderBy('name', 'asc')->get()->map(function($library) {
+        $libraries = $librariesQuery->orderBy('name', 'asc')->get()->map(function($library) {
             // Count members for this library
             $totalMembers = User::where('library_id', $library->id)
                 ->where('role', 'borrower')
@@ -73,7 +80,16 @@ class LibraryController extends Controller
 
     public function destroy(Library $library)
     {
-        // Delete logic
-        return redirect()->route('admin.libraries.index');
+        $library->delete();
+        return redirect()->route('admin.libraries.index')
+            ->with('success', 'Library archived successfully.');
+    }
+    
+    public function restore($id)
+    {
+        $library = Library::onlyTrashed()->findOrFail($id);
+        $library->restore();
+        return redirect()->route('admin.libraries.index')
+            ->with('success', 'Library restored successfully.');
     }
 }

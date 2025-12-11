@@ -63,6 +63,29 @@
         </div>
     </div>
 
+    <!-- Success Message -->
+    @if(session('success'))
+    <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg relative" role="alert">
+        <span class="block sm:inline">{{ session('success') }}</span>
+    </div>
+    @endif
+
+    <!-- Filter Tabs -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="border-b border-gray-200">
+            <nav class="flex -mb-px">
+                <a href="{{ route('admin.libraries.index', ['filter' => 'active']) }}" 
+                   class="px-6 py-3 border-b-2 font-medium text-sm {{ request('filter', 'active') === 'active' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    Active Libraries
+                </a>
+                <a href="{{ route('admin.libraries.index', ['filter' => 'archived']) }}" 
+                   class="px-6 py-3 border-b-2 font-medium text-sm {{ request('filter') === 'archived' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    Archived Libraries
+                </a>
+            </nav>
+        </div>
+    </div>
+
     <!-- Libraries Table -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -106,22 +129,41 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-2">
-                                    <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="p-2 text-green-600 hover:bg-green-50 rounded-full transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                    </button>
-                                    <button class="p-2 text-red-600 hover:bg-red-50 rounded-full transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
+                                    @if(request('filter') === 'archived')
+                                        <!-- Restore button for archived libraries -->
+                                        <form action="{{ route('admin.libraries.restore', $library->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-full transition" title="Restore">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <!-- View button -->
+                                        <a href="{{ route('admin.libraries.show', $library->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition" title="View">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                        </a>
+                                        <!-- Edit button -->
+                                        <a href="{{ route('admin.libraries.edit', $library->id) }}" class="p-2 text-green-600 hover:bg-green-50 rounded-full transition" title="Edit">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </a>
+                                        <!-- Archive button -->
+                                        <form action="{{ route('admin.libraries.destroy', $library->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to archive this library?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-full transition" title="Archive">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
