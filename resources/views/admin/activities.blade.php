@@ -8,18 +8,12 @@
     <div class="flex justify-between items-center">
         <div>
             <h2 class="text-2xl font-bold text-gray-900">Activities Management</h2>
-            <p class="text-gray-600 mt-1">Manage library events and activities</p>
+            <p class="text-gray-600 mt-1">Review and approve library activities</p>
         </div>
-        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Add New Activity
-        </button>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
@@ -37,25 +31,11 @@
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Upcoming</p>
-                    <p class="text-3xl font-bold text-green-600 mt-1">{{ $upcomingActivities }}</p>
+                    <p class="text-sm text-gray-600">Pending</p>
+                    <p class="text-3xl font-bold text-yellow-600 mt-1">{{ $pendingActivities }}</p>
                 </div>
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">This Month</p>
-                    <p class="text-3xl font-bold text-purple-600 mt-1">{{ $thisMonthActivities }}</p>
-                </div>
-                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
@@ -65,7 +45,35 @@
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Total Participants</p>
+                    <p class="text-sm text-gray-600">Approved</p>
+                    <p class="text-3xl font-bold text-green-600 mt-1">{{ $approvedActivities }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Upcoming</p>
+                    <p class="text-3xl font-bold text-purple-600 mt-1">{{ $upcomingActivities }}</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Participants</p>
                     <p class="text-3xl font-bold text-orange-600 mt-1">{{ number_format($totalParticipants) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -77,16 +85,17 @@
         </div>
     </div>
 
-    <!-- Search and Filters -->
+    <!-- Filters -->
     <div class="bg-white rounded-lg shadow-sm p-6">
         <div class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
-                <input type="text" placeholder="Search activities by title or description..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" placeholder="Search activities..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option>All Status</option>
-                <option>Upcoming</option>
-                <option>Past</option>
+                <option>Pending</option>
+                <option>Approved</option>
+                <option>Rejected</option>
             </select>
             <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option>All Categories</option>
@@ -98,101 +107,133 @@
         </div>
     </div>
 
-    <!-- Activities Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @php
-            $colors = [
-                ['from' => 'blue-500', 'to' => 'blue-700', 'button' => 'blue-600', 'hover' => 'blue-700'],
-                ['from' => 'purple-500', 'to' => 'purple-700', 'button' => 'purple-600', 'hover' => 'purple-700'],
-                ['from' => 'green-500', 'to' => 'green-700', 'button' => 'green-600', 'hover' => 'green-700'],
-                ['from' => 'orange-500', 'to' => 'orange-700', 'button' => 'orange-600', 'hover' => 'orange-700'],
-                ['from' => 'red-500', 'to' => 'red-700', 'button' => 'red-600', 'hover' => 'red-700'],
-                ['from' => 'indigo-500', 'to' => 'indigo-700', 'button' => 'indigo-600', 'hover' => 'indigo-700'],
-            ];
-            
-            $categoryColors = [
-                'announcement' => ['text' => 'blue-800', 'bg' => 'blue-100'],
-                'program' => ['text' => 'green-800', 'bg' => 'green-100'],
-                'workshop' => ['text' => 'purple-800', 'bg' => 'purple-100'],
-                'event' => ['text' => 'orange-800', 'bg' => 'orange-100'],
-            ];
-        @endphp
-
-        @forelse($activities as $index => $activity)
-            @php
-                $color = $colors[$index % count($colors)];
-                $categoryColor = $categoryColors[$activity->category] ?? ['text' => 'gray-800', 'bg' => 'gray-100'];
-                $isUpcoming = $activity->activity_date >= now();
-                $isPast = $activity->activity_date < now();
-            @endphp
-            <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
-                <div class="h-48 bg-gradient-to-br from-{{ $color['from'] }} to-{{ $color['to'] }} flex items-center justify-center">
-                    @if($activity->has_image && $activity->image)
-                        <img src="{{ asset('storage/' . $activity->image) }}" alt="{{ $activity->title }}" class="w-full h-full object-cover">
-                    @else
-                        <svg class="w-20 h-20 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Activities Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Library</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($activities as $activity)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            @if($activity->has_image && $activity->image)
+                                <img src="{{ asset('storage/' . $activity->image) }}" alt="{{ $activity->title }}" class="w-12 h-12 rounded object-cover mr-3">
+                            @else
+                                <div class="w-12 h-12 bg-blue-100 rounded flex items-center justify-center mr-3">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                            @endif
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">{{ $activity->title }}</div>
+                                <div class="text-sm text-gray-500 line-clamp-1">{{ Str::limit($activity->description, 50) }}</div>
+                                @if($activity->location)
+                                <div class="text-xs text-gray-400 flex items-center mt-1">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    {{ $activity->location }}
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ $activity->library->name ?? 'N/A' }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($activity->activity_date)->format('M d, Y') }}</div>
+                        @if($activity->time_start && $activity->time_end)
+                        <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($activity->time_start)->format('g:i A') }} - {{ \Carbon\Carbon::parse($activity->time_end)->format('g:i A') }}</div>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @php
+                            $categoryColors = [
+                                'announcement' => 'blue',
+                                'program' => 'green',
+                                'workshop' => 'purple',
+                                'event' => 'orange',
+                            ];
+                            $color = $categoryColors[$activity->category] ?? 'gray';
+                        @endphp
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $color }}-100 text-{{ $color }}-800">
+                            {{ ucfirst($activity->category) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        @if($activity->max_participants)
+                            {{ $activity->current_participants }} / {{ $activity->max_participants }}
+                        @else
+                            {{ $activity->current_participants }}
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if($activity->approval_status === 'pending')
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                Pending
+                            </span>
+                        @elseif($activity->approval_status === 'approved')
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Approved
+                            </span>
+                        @else
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Rejected
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex items-center gap-2">
+                            <button onclick="viewActivity({{ $activity->id }})" class="text-blue-600 hover:text-blue-900" title="View">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                            @if($activity->approval_status === 'pending')
+                                <form action="{{ route('admin.activities.approve', $activity) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="text-green-600 hover:text-green-900" title="Approve">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                                <button onclick="rejectActivity({{ $activity->id }})" class="text-red-600 hover:text-red-900" title="Reject">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                    @endif
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center gap-2 mb-3">
-                        @if($isUpcoming)
-                            <span class="px-3 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Upcoming</span>
-                        @elseif($isPast)
-                            <span class="px-3 py-1 text-xs font-semibold text-gray-800 bg-gray-100 rounded-full">Past</span>
-                        @endif
-                        <span class="px-3 py-1 text-xs font-semibold text-{{ $categoryColor['text'] }} bg-{{ $categoryColor['bg'] }} rounded-full">{{ ucfirst($activity->category) }}</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ $activity->title }}</h3>
-                    <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ $activity->description }}</p>
-                    <div class="space-y-2 text-sm text-gray-600 mb-4">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <span>{{ \Carbon\Carbon::parse($activity->activity_date)->format('F d, Y') }}</span>
-                        </div>
-                        @if($activity->time_start && $activity->time_end)
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>{{ \Carbon\Carbon::parse($activity->time_start)->format('g:i A') }} - {{ \Carbon\Carbon::parse($activity->time_end)->format('g:i A') }}</span>
-                        </div>
-                        @endif
-                        @if($activity->location)
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <span>{{ $activity->location }}</span>
-                        </div>
-                        @endif
-                        @if($activity->max_participants)
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            <span>{{ $activity->current_participants }} / {{ $activity->max_participants }} slots</span>
-                        </div>
-                        @endif
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="flex-1 bg-{{ $color['button'] }} text-white px-4 py-2 rounded-lg hover:bg-{{ $color['hover'] }} transition text-sm">View Details</button>
-                        <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">Edit</button>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-span-3 text-center py-12">
-                <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                <p class="text-gray-600">No activities found</p>
-            </div>
-        @endforelse
+                        <p class="text-gray-600">No activities found</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     <!-- Pagination -->
@@ -202,4 +243,41 @@
     </div>
     @endif
 </div>
+
+<script>
+function viewActivity(id) {
+    // Implement view modal functionality
+    alert('View activity details for ID: ' + id);
+}
+
+function rejectActivity(id) {
+    const reason = prompt('Enter rejection reason:');
+    if (reason) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/activities/${id}/reject`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = '{{ csrf_token() }}';
+        
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'PATCH';
+        
+        const reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.name = 'rejection_reason';
+        reasonInput.value = reason;
+        
+        form.appendChild(csrfInput);
+        form.appendChild(methodInput);
+        form.appendChild(reasonInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 @endsection

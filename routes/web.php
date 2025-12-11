@@ -96,6 +96,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     
     // Activities Management
     Route::resource('activities', ActivityController::class);
+    Route::patch('activities/{activity}/approve', [ActivityController::class, 'approve'])->name('activities.approve');
+    Route::patch('activities/{activity}/reject', [ActivityController::class, 'reject'])->name('activities.reject');
     Route::post('activities/{activity}/cancel', [ActivityController::class, 'cancel'])->name('activities.cancel');
     Route::post('activities/{activity}/participants', [ActivityController::class, 'addParticipant'])->name('activities.add-participant');
     Route::delete('activities/{activity}/participants/{user}', [ActivityController::class, 'removeParticipant'])->name('activities.remove-participant');

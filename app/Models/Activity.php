@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     protected $fillable = [
+        'library_id',
         'activity_date',
         'time_start',
         'time_end',
@@ -19,6 +20,8 @@ class Activity extends Model
         'has_image',
         'category',
         'is_published',
+        'approval_status',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -28,6 +31,12 @@ class Activity extends Model
         'max_participants' => 'integer',
         'current_participants' => 'integer',
     ];
+
+    // Relationship with Library
+    public function library()
+    {
+        return $this->belongsTo(Library::class);
+    }
 
     // Check if activity has available slots
     public function hasAvailableSlots()

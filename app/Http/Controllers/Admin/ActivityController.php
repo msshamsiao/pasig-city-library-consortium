@@ -10,21 +10,44 @@ class ActivityController extends Controller
 {
     public function index()
     {
-        // Get all activities ordered by activity date
-        $activities = Activity::orderBy('activity_date', 'desc')
-            ->paginate(15);
+        // Get all activities with library information ordered by activity date
+        $activities = Activity::with('library')
+            ->orderBy('activity_date', 'desc')
+            ->paginate(20);
 
         // Calculate statistics
         $totalActivities = Activity::count();
-        $upcomingActivities = Activity::where('activity_date', '>=', now())->count();
-        $thisMonthActivities = Activity::whereMonth('activity_date', now()->month)
-            ->whereYear('activity_date', now()->year)
+        $pendingActivities = Activity::where('approval_status', 'pending')->count();
+        $approvedActivities = Activity::where('approval_status', 'approved')->count();
+        $upcomingActivities = Activity::where('activity_date', '>=', now())
+            ->where('approval_status', 'approved')
             ->count();
         
-        // Note: participants count would need a participants table/column
-        $totalParticipants = 0; // Placeholder until participants table exists
+        // Sum all current participants from approved activities
+        $totalParticipants = Activity::where('approval_status', 'approved')
+            ->sum('current_participants');
 
-        return view('admin.activities', compact('activities', 'totalActivities', 'upcomingActivities', 'thisMonthActivities', 'totalParticipants'));
+        return view('admin.activities', compact('activities', 'totalActivities', 'pendingActivities', 'approvedActivities', 'upcomingActivities', 'totalParticipants'));
+    }
+
+    public function approve(Activity $activity)
+    {
+        $activity->update([
+            'approval_status' => 'approved',
+            'rejection_reason' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Activity approved successfully');
+    }
+
+    public function reject(Request $request, Activity $activity)
+    {
+        $activity->update([
+            'approval_status' => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+        ]);
+
+        return redirect()->back()->with('success', 'Activity rejected');
     }
 
     public function create()
