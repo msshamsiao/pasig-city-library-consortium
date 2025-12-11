@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller
@@ -83,13 +84,42 @@ class ActivityController extends Controller
 
     public function destroy(Activity $activity)
     {
-        // Delete logic
-        return redirect()->route('admin.activities.index');
+        $oldValues = $activity->toArray();
+        
+        $activity->delete();
+
+        // Log activity deletion
+        AuditLog::log(
+            'delete',
+            'Activity',
+            "Deleted activity: {$oldValues['title']} at {$activity->library->name}",
+            $activity->id,
+            $oldValues,
+            null
+        );
+        
+        return redirect()->route('admin.activities.index')->with('success', 'Activity deleted successfully');
     }
 
     public function cancel(Activity $activity)
     {
-        // Cancel logic
+        $oldValues = $activity->only(['approval_status', 'rejection_reason']);
+        
+        $activity->update([
+            'approval_status' => 'cancelled',
+            'rejection_reason' => 'Cancelled by administrator',
+        ]);
+
+        // Log activity cancellation
+        AuditLog::log(
+            'cancel',
+            'Activity',
+            "Cancelled activity: {$activity->title} at {$activity->library->name}",
+            $activity->id,
+            $oldValues,
+            ['approval_status' => 'cancelled']
+        );
+        
         return redirect()->back()->with('success', 'Activity cancelled');
     }
 

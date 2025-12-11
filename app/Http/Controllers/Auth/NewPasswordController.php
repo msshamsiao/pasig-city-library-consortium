@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
@@ -48,6 +49,22 @@ class NewPasswordController extends Controller
                 ])->save();
 
                 event(new PasswordReset($user));
+
+                // Log password reset
+                AuditLog::create([
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'user_role' => $user->role,
+                    'library_id' => $user->library_id,
+                    'action' => 'password_reset',
+                    'model' => 'User',
+                    'model_id' => $user->id,
+                    'description' => "User reset password: {$user->name} ({$user->email})",
+                    'old_values' => null,
+                    'new_values' => null,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
             }
         );
 

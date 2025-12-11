@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use App\Models\Holding;
 
@@ -61,7 +62,20 @@ class BookController extends Controller
 
     public function destroy(Holding $book)
     {
+        $oldValues = $book->toArray();
+        
         $book->delete();
+
+        // Log book deletion
+        AuditLog::log(
+            'delete',
+            'Holding',
+            "Deleted book: {$oldValues['title']} by {$oldValues['author']} (ISBN: {$oldValues['isbn']})",
+            $book->id,
+            $oldValues,
+            null
+        );
+        
         return redirect()->route('admin.books.index')
             ->with('success', 'Book deleted successfully!');
     }

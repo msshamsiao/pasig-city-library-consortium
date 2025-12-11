@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -61,20 +62,57 @@ class MemberController extends Controller
 
     public function destroy(User $member)
     {
+        $oldValues = $member->toArray();
+        
         $member->delete();
+
+        // Log member deletion
+        AuditLog::log(
+            'delete',
+            'User',
+            "Deleted member: {$oldValues['name']} ({$oldValues['email']}) - Member ID: {$oldValues['member_id']}",
+            $member->id,
+            $oldValues,
+            null
+        );
+        
         return redirect()->route('admin.members.index')
             ->with('success', 'Member deleted successfully!');
     }
 
     public function suspend(User $member)
     {
+        $oldStatus = $member->status;
         $member->update(['status' => 'suspended']);
+
+        // Log member suspension
+        AuditLog::log(
+            'suspend',
+            'User',
+            "Suspended member: {$member->name} ({$member->email})",
+            $member->id,
+            ['status' => $oldStatus],
+            ['status' => 'suspended']
+        );
+        
         return redirect()->back()->with('success', 'Member suspended successfully!');
     }
 
     public function activate(User $member)
     {
+        $oldStatus = $member->status;
         $member->update(['status' => 'active']);
+
+        // Log member activation
+        AuditLog::log(
+            'activate',
+            'User',
+            "Activated member: {$member->name} ({$member->email})",
+            $member->id,
+            ['status' => $oldStatus],
+            ['status' => 'active']
+        );
+        
         return redirect()->back()->with('success', 'Member activated successfully!');
     }
 }
