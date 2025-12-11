@@ -4,16 +4,44 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Library;
+use App\Models\Book;
+use App\Models\User;
+use App\Models\BookRequest;
 use Illuminate\Http\Request;
 
 class LibraryController extends Controller
 {
     public function index()
     {
-        // Get all libraries with pagination
-        $libraries = Library::orderBy('name', 'asc')->paginate(10);
+        // Get all libraries with their statistics
+        $libraries = Library::orderBy('name', 'asc')->get()->map(function($library) {
+            // Count members for this library
+            $totalMembers = User::where('library_id', $library->id)
+                ->where('role', 'borrower')
+                ->count();
 
-        return view('admin.libraries', compact('libraries'));
+            // Get user IDs from this library
+            $userIds = User::where('library_id', $library->id)->pluck('id');
+
+            // Count active book requests from users of this library
+            $activeRequests = BookRequest::whereIn('user_id', $userIds)
+                ->whereIn('status', ['approved', 'borrowed'])
+                ->count();
+
+            // Add statistics to library object
+            $library->total_books = Book::count(); // Shared consortium books
+            $library->total_members = $totalMembers;
+            $library->active_requests = $activeRequests;
+
+            return $library;
+        });
+
+        // Calculate overall statistics
+        $totalLibraries = Library::count();
+        $totalBooks = Book::count();
+        $totalMembers = User::where('role', 'borrower')->count();
+
+        return view('admin.libraries', compact('libraries', 'totalLibraries', 'totalBooks', 'totalMembers'));
     }
 
     public function create()
