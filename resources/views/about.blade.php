@@ -67,15 +67,11 @@
                             <ul class="space-y-2 text-sm text-gray-700">
                                 <li class="flex items-start">
                                     <span class="mr-2">•</span>
-                                    <span>Valid ID required for registration</span>
+                                    <span>Each member library have their own process for membership</span>
                                 </li>
                                 <li class="flex items-start">
                                     <span class="mr-2">•</span>
-                                    <span>Free membership for Pasig City residents</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="mr-2">•</span>
-                                    <span>Annual renewal required</span>
+                                    <span>Visit the member library that you can be affiliated</span>
                                 </li>
                                 <li class="flex items-start">
                                     <span class="mr-2">•</span>
@@ -84,25 +80,33 @@
                             </ul>
                         </div>
 
-                        <!-- Borrowing Guidelines -->
+                        <!-- Reservation Guidelines -->
                         <div>
-                            <h4 class="font-bold text-gray-900 mb-3">Borrowing Guidelines</h4>
+                            <h4 class="font-bold text-gray-900 mb-3">Reservation Guidelines</h4>
                             <ul class="space-y-2 text-sm text-gray-700">
                                 <li class="flex items-start">
                                     <span class="mr-2">•</span>
-                                    <span>Maximum 5 books per member</span>
+                                    <span>Use the system for reservation. No direct process will be done face to face</span>
                                 </li>
                                 <li class="flex items-start">
                                     <span class="mr-2">•</span>
-                                    <span>14-day loan period</span>
+                                    <span>You can reserve maximum of 5 resource materials from each member library</span>
                                 </li>
                                 <li class="flex items-start">
                                     <span class="mr-2">•</span>
-                                    <span>2 renewal extensions allowed</span>
+                                    <span>Reservation must be at least three (3) days before the schedule</span>
                                 </li>
                                 <li class="flex items-start">
                                     <span class="mr-2">•</span>
-                                    <span>Late fees apply after due date</span>
+                                    <span>You can cancel reservation any time</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>Reserved resources can only be used inside the member library on specified schedule</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>Borrowing of books outside the member library are not allowed</span>
                                 </li>
                             </ul>
                         </div>

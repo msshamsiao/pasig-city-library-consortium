@@ -23,16 +23,17 @@ class AboutController extends Controller
         // Rules and guidelines - ALL RULES DATA
         $rules = [
             'Library Membership' => [
-                'Valid ID required for registration',
-                'Free membership for Pasig City residents',
-                'Annual renewal required',
+                'Each member library have their own process for membership',
+                'Visit the member library that you can be affiliated',
                 'Guest access available for visitors'
             ],
-            'Borrowing Guidelines' => [
-                'Maximum 5 books per member',
-                '14-day loan period',
-                '2 renewal extensions allowed',
-                'Late fees apply after due date'
+            'Reservation Guidelines' => [
+                'Use the system for reservation. No direct process will be done face to face',
+                'You can reserve maximum of 5 resource materials from each member library',
+                'Reservation must be at least three (3) days before the schedule',
+                'You can cancel reservation any time',
+                'Reserved resources can only be used inside the member library on specified schedule',
+                'Borrowing of books outside the member library are not allowed'
             ],
             'Digital Resources' => [
                 '24/7 online access with library card',
