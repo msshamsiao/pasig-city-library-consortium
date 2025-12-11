@@ -29,7 +29,7 @@ class AnalyticsController extends Controller
                 ->whereIn('status', ['approved', 'borrowed'])
                 ->count();
 
-            return (object)[
+            return [
                 'id' => $library->id,
                 'name' => $library->name,
                 'address' => $library->address,
