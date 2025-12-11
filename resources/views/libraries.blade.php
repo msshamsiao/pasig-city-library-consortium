@@ -43,18 +43,13 @@
                         </div>
                     </div>
                     
-                    <!-- Logo Placeholder -->
+                    <!-- Logo -->
                     <div class="ml-6 flex-shrink-0">
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
+                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
                             @if($library->logo)
-                                <img src="{{ asset('storage/' . $library->logo) }}" alt="{{ $library->name }} Logo" class="w-20 h-20 object-contain">
+                                <img src="{{ asset('storage/' . $library->logo) }}" alt="{{ $library->name }} Logo" class="w-24 h-24 object-contain">
                             @else
-                                <svg class="w-20 h-20 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="4" y="4" width="4" height="16" rx="1"/>
-                                    <rect x="10" y="4" width="4" height="16" rx="1"/>
-                                    <rect x="16" y="4" width="4" height="16" rx="1"/>
-                                    <rect x="10" y="8" width="4" height="8" fill="white"/>
-                                </svg>
+                                <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="w-24 h-24 object-contain">
                             @endif
                             <p class="text-center text-xs text-gray-500 mt-2">Logo</p>
                         </div>
