@@ -93,11 +93,22 @@
                                                 'ebook' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>'
                                             ];
                                             $icon = $icons[$reservation->material_type] ?? $icons['book'];
+                                            // Extract title from admin_notes if exists
+                                            $materialTitle = '';
+                                            if ($reservation->admin_notes && strpos($reservation->admin_notes, 'Material:') !== false) {
+                                                preg_match('/Material:\s*(.+?)(?:\n|$)/', $reservation->admin_notes, $matches);
+                                                $materialTitle = $matches[1] ?? '';
+                                            }
                                         @endphp
                                         <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             {!! $icon !!}
                                         </svg>
-                                        <span class="text-sm font-medium text-gray-900 capitalize">{{ $reservation->material_type }}</span>
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-900 capitalize">{{ $reservation->material_type }}</span>
+                                            @if($materialTitle)
+                                                <p class="text-xs text-gray-500">{{ Str::limit($materialTitle, 40) }}</p>
+                                            @endif
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -133,8 +144,8 @@
                                         </form>
                                     @endif
                                     @if($reservation->admin_notes)
-                                        <button onclick="showNotes('{{ addslashes($reservation->admin_notes) }}')" 
-                                                class="text-blue-600 hover:text-blue-900">View Notes</button>
+                                        <button onclick="showNotes(`{{ str_replace('`', '\`', $reservation->admin_notes) }}`)" 
+                                                class="text-blue-600 hover:text-blue-900">View Details</button>
                                     @endif
                                 </td>
                             </tr>
@@ -205,11 +216,11 @@
     </div>
 </div>
 
-<!-- Admin Notes Modal -->
+<!-- Details Modal -->
 <div id="notesModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-medium text-gray-900">Admin Notes</h3>
+            <h3 class="text-lg font-medium text-gray-900">Reservation Details</h3>
             <button onclick="document.getElementById('notesModal').classList.add('hidden')" 
                     class="text-gray-400 hover:text-gray-500">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,7 +228,7 @@
                 </svg>
             </button>
         </div>
-        <div id="notesContent" class="text-gray-700"></div>
+        <div id="notesContent" class="text-gray-700 whitespace-pre-line"></div>
         <div class="mt-4 flex justify-end">
             <button onclick="document.getElementById('notesModal').classList.add('hidden')" 
                     class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">

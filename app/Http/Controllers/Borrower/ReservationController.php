@@ -23,10 +23,27 @@ class ReservationController extends Controller
             'material_type' => 'required|in:book,journal,cd,ebook',
             'date_schedule' => 'required|date|after_or_equal:today',
             'date_time' => 'required',
+            'book_info' => 'nullable|string',
         ]);
+
+        // Store book information in admin_notes if provided
+        if (!empty($validated['book_info'])) {
+            $bookInfo = json_decode($validated['book_info'], true);
+            if ($bookInfo) {
+                $infoText = "Material: " . ($bookInfo['title'] ?? 'N/A');
+                if (!empty($bookInfo['author'])) {
+                    $infoText .= "\nAuthor: " . $bookInfo['author'];
+                }
+                if (!empty($bookInfo['isbn'])) {
+                    $infoText .= "\nISBN: " . $bookInfo['isbn'];
+                }
+                $validated['admin_notes'] = $infoText;
+            }
+        }
 
         $validated['user_id'] = auth()->id();
         $validated['status'] = 'pending';
+        unset($validated['book_info']); // Remove book_info as it's not a database field
 
         BookRequest::create($validated);
 

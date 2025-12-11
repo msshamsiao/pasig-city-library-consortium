@@ -126,6 +126,24 @@
                                                         </span>
                                                     </div>
                                                     <p class="text-sm text-gray-500 mt-2" x-show="book.description" x-text="book.description"></p>
+                                                    
+                                                    @auth
+                                                        @if(auth()->user()->isBorrower())
+                                                            <button 
+                                                                @click="openReservationModal(book)"
+                                                                class="mt-3 inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+                                                            >
+                                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                                                </svg>
+                                                                Request Material
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <a href="{{ route('login') }}" class="mt-3 inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                                                            Login to Request
+                                                        </a>
+                                                    @endauth
                                                 </div>
                                             </div>
                                         </div>
@@ -223,6 +241,71 @@
     </div>
 </div>
 
+<!-- Reservation Request Modal -->
+@auth
+@if(auth()->user()->isBorrower())
+<div id="reservationModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">Request Material</h3>
+            <button onclick="closeReservationModal()" class="text-gray-400 hover:text-gray-500">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Book Info Display -->
+        <div id="selectedBookInfo" class="mb-4 p-3 bg-gray-50 rounded-lg">
+            <p class="text-sm text-gray-600"><span class="font-medium">Material:</span> <span id="bookInfoTitle"></span></p>
+            <p class="text-sm text-gray-600"><span class="font-medium">Author:</span> <span id="bookInfoAuthor"></span></p>
+        </div>
+
+        <form action="{{ route('borrower.reservations.store') }}" method="POST">
+            @csrf
+            
+            <input type="hidden" name="book_info" id="bookInfoHidden">
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Material Type</label>
+                <select name="material_type" required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Select material type</option>
+                    <option value="book" selected>Book</option>
+                    <option value="journal">Journal</option>
+                    <option value="cd">CD/DVD</option>
+                    <option value="ebook">E-Book</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Date</label>
+                <input type="date" name="date_schedule" required min="{{ date('Y-m-d') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Time</label>
+                <input type="time" name="date_time" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" onclick="closeReservationModal()"
+                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Submit Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+@endauth
+
 <script>
 function searchComponent() {
     return {
@@ -267,8 +350,24 @@ function searchComponent() {
                 alert('An error occurred while searching');
                 this.isLoading = false;
             });
+        },
+        
+        openReservationModal(book) {
+            console.log('Opening reservation for:', book);
+            document.getElementById('bookInfoTitle').textContent = book.title;
+            document.getElementById('bookInfoAuthor').textContent = book.author;
+            document.getElementById('bookInfoHidden').value = JSON.stringify({
+                title: book.title,
+                author: book.author,
+                isbn: book.isbn
+            });
+            document.getElementById('reservationModal').classList.remove('hidden');
         }
     }
+}
+
+function closeReservationModal() {
+    document.getElementById('reservationModal').classList.add('hidden');
 }
 </script>
 @endsection
