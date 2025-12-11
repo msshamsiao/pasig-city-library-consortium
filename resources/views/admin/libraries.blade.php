@@ -10,12 +10,12 @@
             <h2 class="text-2xl font-bold text-gray-900">Libraries Management</h2>
             <p class="text-gray-600 mt-1">Manage library branches and locations</p>
         </div>
-        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+        <a href="{{ route('admin.libraries.create') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Add New Library
-        </button>
+        </a>
     </div>
 
     <!-- Stats Cards -->
