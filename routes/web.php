@@ -49,7 +49,7 @@ Route::get('/dashboard', function () {
     } elseif ($user->isMemberLibrarian()) {
         return redirect()->route('librarian.dashboard');
     } elseif ($user->isBorrower()) {
-        return redirect()->route('borrower.dashboard');
+        return redirect()->route('borrower.reservations.index');
     }
     
     return redirect()->route('home');
@@ -162,9 +162,6 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
 */
 
 Route::prefix('borrower')->name('borrower.')->middleware(['auth', 'role:borrower'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [\App\Http\Controllers\Borrower\BorrowerDashboardController::class, 'index'])->name('dashboard');
-    
     // Reservations
     Route::get('/reservations', [\App\Http\Controllers\Borrower\ReservationController::class, 'index'])->name('reservations.index');
     Route::post('/reservations', [\App\Http\Controllers\Borrower\ReservationController::class, 'store'])->name('reservations.store');
