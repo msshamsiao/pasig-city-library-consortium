@@ -8,12 +8,17 @@ use Illuminate\Http\Request;
 
 class ActivityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Get all activities with library information ordered by activity date
-        $activities = Activity::with('library')
-            ->orderBy('activity_date', 'desc')
-            ->paginate(20);
+        // Get all activities with library information
+        $query = Activity::with('library');
+        
+        // Filter by library if provided
+        if ($request->filled('library')) {
+            $query->where('library_id', $request->library);
+        }
+        
+        $activities = $query->orderBy('activity_date', 'desc')->paginate(20);
 
         // Calculate statistics
         $totalActivities = Activity::count();
@@ -23,11 +28,10 @@ class ActivityController extends Controller
             ->where('approval_status', 'approved')
             ->count();
         
-        // Sum all current participants from approved activities
-        $totalParticipants = Activity::where('approval_status', 'approved')
-            ->sum('current_participants');
+        // Get libraries for filter dropdown
+        $libraries = \App\Models\Library::orderBy('name')->get();
 
-        return view('admin.activities', compact('activities', 'totalActivities', 'pendingActivities', 'approvedActivities', 'upcomingActivities', 'totalParticipants'));
+        return view('admin.activities', compact('activities', 'totalActivities', 'pendingActivities', 'approvedActivities', 'upcomingActivities', 'libraries'));
     }
 
     public function approve(Activity $activity)
