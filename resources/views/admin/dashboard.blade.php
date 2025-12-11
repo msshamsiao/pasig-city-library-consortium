@@ -31,32 +31,6 @@
             </div>
         </div>
 
-        <!-- Library Information -->
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div class="flex items-center gap-2 mb-4">
-                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                    <rect x="4" y="4" width="4" height="16" rx="1"/>
-                    <rect x="10" y="4" width="4" height="16" rx="1"/>
-                    <rect x="16" y="4" width="4" height="16" rx="1"/>
-                </svg>
-                <h3 class="text-xl font-bold text-gray-900">Library Information</h3>
-            </div>
-            <div class="grid grid-cols-3 gap-4">
-                <div>
-                    <p class="text-sm text-gray-600">Library Name:</p>
-                    <p class="font-semibold text-gray-900">{{ $library->name ?? 'Pasig City Central Library' }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">Location:</p>
-                    <p class="font-semibold text-gray-900">Pasig City Hall Complex</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">Type:</p>
-                    <p class="font-semibold text-gray-900">Main Library</p>
-                </div>
-            </div>
-        </div>
-
         <!-- Library Dashboard Stats -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div class="flex items-center gap-2 mb-6">
