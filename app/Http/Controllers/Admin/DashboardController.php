@@ -28,6 +28,12 @@ class DashboardController extends Controller
             'completed_transactions' => BookRequest::where('status', 'completed')->count(),
         ];
         
-        return view('admin.dashboard', compact('user', 'library', 'stats'));
+        // Get library members (member librarians) with their library info
+        $libraryMembers = User::where('role', 'member_librarian')
+            ->with('library')
+            ->latest()
+            ->get();
+        
+        return view('admin.dashboard', compact('user', 'library', 'stats', 'libraryMembers'));
     }
 }
