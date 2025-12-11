@@ -10,9 +10,8 @@ class ActivityController extends Controller
 {
     public function index()
     {
-        // Get all activities with library information, ordered by date
-        $activities = Activity::with('library')
-            ->orderBy('date', 'desc')
+        // Get all activities with library information, ordered by activity date
+        $activities = Activity::orderBy('activity_date', 'desc')
             ->paginate(15);
 
         return view('admin.activities', compact('activities'));
