@@ -20,12 +20,7 @@ class LibrarianDashboardController extends Controller
         ];
 
         $recentActivities = [];
-        
-        $members = User::where('role', 'borrower')
-            ->where('library_id', $libraryId)
-            ->latest()
-            ->get();
 
-        return view('librarian.dashboard', compact('stats', 'recentActivities', 'members'));
+        return view('librarian.dashboard', compact('stats', 'recentActivities'));
     }
 }
