@@ -12,10 +12,20 @@ class BookController extends Controller
 {
     public function index()
     {
-        // Show all books since they are centralized across all libraries
-        $books = Holding::with('library')
-            ->latest()
-            ->paginate(20);
+        $libraryId = auth()->user()->library_id;
+        
+        // If no library assigned, show all books
+        if (!$libraryId) {
+            $books = Holding::with('library')
+                ->latest()
+                ->paginate(20);
+        } else {
+            // Filter books by the librarian's library branch
+            $books = Holding::with('library')
+                ->where('holding_branch_id', $libraryId)
+                ->latest()
+                ->paginate(20);
+        }
         
         return view('librarian.books.index', compact('books'));
     }

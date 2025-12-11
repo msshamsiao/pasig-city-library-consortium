@@ -102,6 +102,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $statusColors = [
+                                            'pending' => 'bg-orange-100 text-orange-800',
                                             'reserved' => 'bg-yellow-100 text-yellow-800',
                                             'borrowed' => 'bg-blue-100 text-blue-800',
                                             'returned' => 'bg-green-100 text-green-800',
@@ -113,19 +114,29 @@
                                         {{ ucfirst($reservation->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                    @if($reservation->status === 'reserved')
-                                        <form action="{{ route('borrower.reservations.cancel', $reservation) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Are you sure you want to cancel this reservation?')" 
-                                                    class="text-red-600 hover:text-red-900">Cancel</button>
-                                        </form>
-                                    @endif
-                                    @if($reservation->admin_notes)
-                                        <button onclick="showNotes(`{{ str_replace('`', '\`', $reservation->admin_notes) }}`)" 
-                                                class="text-blue-600 hover:text-blue-900">View Details</button>
-                                    @endif
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex gap-1">
+                                        @if(in_array($reservation->status, ['pending', 'reserved']))
+                                            <form action="{{ route('borrower.reservations.cancel', $reservation) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Are you sure you want to cancel this reservation?')" 
+                                                        class="p-2 text-red-600 hover:bg-red-50 rounded-full transition inline-block" title="Cancel Reservation">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @if($reservation->admin_notes)
+                                            <button onclick="showNotes(`{{ str_replace('`', '\`', $reservation->admin_notes) }}`)" 
+                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition inline-block" title="View Details">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            </button>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

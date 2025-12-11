@@ -10,10 +10,31 @@ class MemberController extends Controller
 {
     public function index()
     {
-        $members = User::where('role', 'borrower')
-            ->where('library_id', auth()->user()->library_id)
-            ->latest()
-            ->paginate(20);
+        $libraryId = auth()->user()->library_id;
+        
+        // If no library assigned, show all borrowers
+        if (!$libraryId) {
+            $members = User::where('role', 'borrower')
+                ->latest()
+                ->paginate(20);
+        } else {
+            // Get library acronym and filter members by library_branch
+            $library = \App\Models\Library::find($libraryId);
+            $libraryAcronym = $library ? $library->acronym : null;
+            
+            // Get member_ids from members table that belong to this library
+            $memberIds = \App\Models\Member::when($libraryAcronym, function($q) use ($libraryAcronym) {
+                return $q->where('library_branch', $libraryAcronym);
+            })->pluck('member_id')->toArray();
+            
+            // Get users that have these member_ids
+            $members = User::where('role', 'borrower')
+                ->when(!empty($memberIds), function($q) use ($memberIds) {
+                    return $q->whereIn('member_id', $memberIds);
+                })
+                ->latest()
+                ->paginate(20);
+        }
         
         return view('librarian.members.index', compact('members'));
     }

@@ -143,6 +143,13 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
     Route::put('/books/{book}', [\App\Http\Controllers\Librarian\BookController::class, 'update'])->name('books.update');
     Route::post('/books/upload', [\App\Http\Controllers\Librarian\BookController::class, 'upload'])->name('books.upload');
     
+    // Reservations/Book Requests
+    Route::get('/reservations', [\App\Http\Controllers\Librarian\ReservationController::class, 'index'])->name('reservations.index');
+    Route::post('/reservations/{id}/approve', [\App\Http\Controllers\Librarian\ReservationController::class, 'approve'])->name('reservations.approve');
+    Route::post('/reservations/{id}/reject', [\App\Http\Controllers\Librarian\ReservationController::class, 'reject'])->name('reservations.reject');
+    Route::post('/reservations/{id}/borrowed', [\App\Http\Controllers\Librarian\ReservationController::class, 'borrowed'])->name('reservations.borrowed');
+    Route::post('/reservations/{id}/returned', [\App\Http\Controllers\Librarian\ReservationController::class, 'returned'])->name('reservations.returned');
+    
     // Activities (Add)
     Route::get('/activities', [\App\Http\Controllers\Librarian\ActivityController::class, 'index'])->name('activities.index');
     Route::get('/activities/create', [\App\Http\Controllers\Librarian\ActivityController::class, 'create'])->name('activities.create');
