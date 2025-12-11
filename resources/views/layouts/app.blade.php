@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Pasig City Library Consortium')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/PCLC_logo.png') }}">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     

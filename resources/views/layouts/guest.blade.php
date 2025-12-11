@@ -6,6 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>Login - Pasig City Library Consortium</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/PCLC_logo.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
