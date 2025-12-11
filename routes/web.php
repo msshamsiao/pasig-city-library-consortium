@@ -138,6 +138,8 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
     Route::get('/members', [\App\Http\Controllers\Librarian\MemberController::class, 'index'])->name('members.index');
     Route::get('/members/create', [\App\Http\Controllers\Librarian\MemberController::class, 'create'])->name('members.create');
     Route::post('/members', [\App\Http\Controllers\Librarian\MemberController::class, 'store'])->name('members.store');
+    Route::get('/members/{member}/edit', [\App\Http\Controllers\Librarian\MemberController::class, 'edit'])->name('members.edit');
+    Route::put('/members/{member}', [\App\Http\Controllers\Librarian\MemberController::class, 'update'])->name('members.update');
     Route::post('/members/upload', [\App\Http\Controllers\Librarian\MemberController::class, 'upload'])->name('members.upload');
     
     // Book Requests (Approve/Reject)
@@ -149,6 +151,8 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
     Route::get('/books', [\App\Http\Controllers\Librarian\BookController::class, 'index'])->name('books.index');
     Route::get('/books/create', [\App\Http\Controllers\Librarian\BookController::class, 'create'])->name('books.create');
     Route::post('/books', [\App\Http\Controllers\Librarian\BookController::class, 'store'])->name('books.store');
+    Route::get('/books/{book}/edit', [\App\Http\Controllers\Librarian\BookController::class, 'edit'])->name('books.edit');
+    Route::put('/books/{book}', [\App\Http\Controllers\Librarian\BookController::class, 'update'])->name('books.update');
     Route::post('/books/upload', [\App\Http\Controllers\Librarian\BookController::class, 'upload'])->name('books.upload');
     
     // Activities (Add)

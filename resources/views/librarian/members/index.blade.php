@@ -9,26 +9,37 @@
                 <h1 class="text-2xl font-semibold text-gray-900">Members Management</h1>
                 <p class="mt-1 text-sm text-gray-600">Manage library members and borrowers</p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                    </svg>
-                    Upload CSV
-                </button>
-                <a href="{{ route('librarian.members.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Add Member
-                </a>
-            </div>
+            <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                Upload CSV
+            </button>
         </div>
 
         <!-- Success Message -->
         @if(session('success'))
         <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg relative" role="alert">
             <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+        @endif
+
+        <!-- Error Message -->
+        @if(session('error'))
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg relative" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+        @endif
+
+        <!-- Import Errors -->
+        @if(session('errors') && is_array(session('errors')))
+        <div class="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg relative" role="alert">
+            <p class="font-semibold mb-2">Import Errors:</p>
+            <ul class="list-disc list-inside text-sm space-y-1">
+                @foreach(session('errors') as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
         @endif
 
@@ -43,6 +54,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -78,11 +90,18 @@
                                 Active
                             </span>
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{{ route('librarian.members.edit', $member) }}" class="p-2 text-green-600 hover:bg-green-50 rounded-full transition inline-block" title="Update">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </a>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
-                            No members found. Add members using the "Add Member" or "Upload CSV" button.
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
+                            No members found. Add members using the "Upload CSV" button.
                         </td>
                     </tr>
                     @endforelse
@@ -132,7 +151,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     CSV File
                 </label>
-                <input type="file" name="file" accept=".csv,.xlsx,.xls" required
+                <input type="file" name="file" accept=".csv" required
                     class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                 <p class="mt-2 text-xs text-gray-500">Upload a CSV file with columns: name, email, password, phone, address</p>
             </div>
@@ -145,6 +164,14 @@
                     <li>Email must be unique</li>
                     <li>Password will be encrypted automatically</li>
                 </ul>
+                <div class="mt-3 p-3 bg-white rounded border border-yellow-300">
+                    <p class="text-xs font-medium text-yellow-800 mb-1">Sample CSV format:</p>
+                    <code class="text-xs text-gray-700 block">
+                        name,email,password,phone,address<br>
+                        John Doe,john@example.com,Pass1234,09123456789,123 Main St<br>
+                        Jane Smith,jane@example.com,Pass5678,,456 Oak Ave
+                    </code>
+                </div>
             </div>
             
             <div class="flex justify-end gap-3">
