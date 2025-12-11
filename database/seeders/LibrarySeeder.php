@@ -51,15 +51,6 @@ class LibrarySeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => 'Rizal High School Library',
-                'address' => 'Pasig City, Metro Manila',
-                'phone' => 'N/A',
-                'website' => null,
-                'contact_person' => 'Library Administrator',
-                'position' => 'Administrator',
-                'is_active' => true,
-            ],
-            [
                 'name' => 'Pasig City Hall Library',
                 'address' => 'Pasig City Hall, Metro Manila',
                 'phone' => 'N/A',

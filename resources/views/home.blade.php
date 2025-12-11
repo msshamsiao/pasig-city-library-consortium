@@ -11,7 +11,7 @@
             
             <div class="flex gap-4 items-end">
                 <!-- Category Dropdown -->
-                <div class="flex-1">
+                <div class="w-36">
                     <select x-model="category" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="all">All</option>
                         <option value="book">Book</option>
@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Search Input -->
-                <div class="flex-1">
+                <div class="flex-[2]">
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@
                         <input 
                             x-model="search"
                             type="text" 
-                            placeholder="Search books, authors, or titles..." 
+                            placeholder="Enter Title, Author, or Subject..." 
                             class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                     </div>
@@ -146,7 +146,7 @@
         </div>
 
         <!-- Two Column Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- Left Sidebar - Libraries List -->
             <div class="lg:col-span-1">
                 <div class="bg-white border border-gray-200 rounded-lg p-6">
@@ -155,9 +155,10 @@
                     <div class="space-y-4">
                         @foreach($libraries as $library)
                             <div>
-                                <h4 class="font-semibold text-gray-900">{{ $library->name }}</h4>
                                 @if($library->website)
-                                    <a href="{{ $library->website }}" target="_blank" class="text-xs text-blue-600 hover:underline">Visit Website</a>
+                                    <a href="{{ $library->website }}" target="_blank" class="font-semibold text-blue-600 hover:underline">{{ $library->name }}</a>
+                                @else
+                                    <h4 class="font-semibold text-gray-900">{{ $library->name }}</h4>
                                 @endif
                             </div>
                         @endforeach
@@ -166,20 +167,19 @@
             </div>
 
             <!-- Right Content Area -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Process/Routes Info -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Welcome Message -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6">
-                    <h3 class="text-2xl font-bold text-blue-600 mb-4">Process / Routes</h3>
-                    <p class="text-gray-700">
-                        Welcome to the Pasig City Library Consortium portal. Use the search functionality above to find books, authors, subjects, or ISBN numbers across all participating libraries in our network.
+                    <h3 class="text-2xl font-bold text-blue-600 mb-4">Welcome</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Welcome to the Community Library Consortium Portal. Use the search bar above to explore titles, authors, and subjects across all participating libraries in our network. 
+                        This platform helps you quickly locate materials, check availability, and access shared resources from member libraries.
                     </p>
                 </div>
 
                 <!-- Statistics Cards -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6">
-                    <h3 class="text-2xl font-bold text-blue-600 text-center mb-6">HOME (Demographics + Statistics)</h3>
-                    
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                         <!-- Total Libraries -->
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
                             <div class="text-4xl font-bold text-blue-600 mb-2">{{ $statistics['total_libraries'] }}</div>
@@ -192,16 +192,10 @@
                             <div class="text-sm text-gray-600">Total Books</div>
                         </div>
 
-                        <!-- Available Books -->
+                        <!-- Total Reservations -->
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                            <div class="text-4xl font-bold text-blue-600 mb-2">{{ number_format($statistics['available_books']) }}</div>
-                            <div class="text-sm text-gray-600">Available Books</div>
-                        </div>
-
-                        <!-- On Loan -->
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                            <div class="text-4xl font-bold text-blue-600 mb-2">{{ number_format($statistics['on_loan']) }}</div>
-                            <div class="text-sm text-gray-600">On Loan</div>
+                            <div class="text-4xl font-bold text-blue-600 mb-2">{{ number_format($statistics['total_reservations']) }}</div>
+                            <div class="text-sm text-gray-600">Total Reservations</div>
                         </div>
                     </div>
                 </div>

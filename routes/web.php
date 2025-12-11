@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\LibrariesController;
+use App\Http\Controllers\ActivitiesController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\MemberController;
@@ -22,6 +26,19 @@ use App\Http\Controllers\Admin\SettingController;
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/search', [HomeController::class, 'search'])->name('home.search');
+
+// About
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// Libraries
+Route::get('/libraries', [LibrariesController::class, 'index'])->name('libraries');
+
+// Activities
+Route::get('/activities', [ActivitiesController::class, 'index'])->name('activities');
+
+// Contact
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 // Dashboard - Redirect to role-specific dashboard
 Route::get('/dashboard', function () {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Library;
 use App\Models\Book;
+use App\Models\BookRequest;
 
 class HomeController extends Controller
 {
@@ -18,14 +19,12 @@ class HomeController extends Controller
         
         // Calculate dynamic statistics from database
         $totalBooks = Book::count();
-        $availableBooks = Book::where('status', 'available')->count();
-        $onLoan = Book::where('status', 'borrowed')->count();
+        $totalReservations = BookRequest::whereIn('status', ['pending', 'approved'])->count();
         
         $statistics = [
             'total_libraries' => $libraries->count(),
             'total_books' => $totalBooks,
-            'available_books' => $availableBooks,
-            'on_loan' => $onLoan,
+            'total_reservations' => $totalReservations,
         ];
 
         return view('home', compact('statistics', 'libraries'));
