@@ -10,11 +10,21 @@ class ActivityController extends Controller
 {
     public function index()
     {
-        // Get all activities with library information, ordered by activity date
+        // Get all activities ordered by activity date
         $activities = Activity::orderBy('activity_date', 'desc')
             ->paginate(15);
 
-        return view('admin.activities', compact('activities'));
+        // Calculate statistics
+        $totalActivities = Activity::count();
+        $upcomingActivities = Activity::where('activity_date', '>=', now())->count();
+        $thisMonthActivities = Activity::whereMonth('activity_date', now()->month)
+            ->whereYear('activity_date', now()->year)
+            ->count();
+        
+        // Note: participants count would need a participants table/column
+        $totalParticipants = 0; // Placeholder until participants table exists
+
+        return view('admin.activities', compact('activities', 'totalActivities', 'upcomingActivities', 'thisMonthActivities', 'totalParticipants'));
     }
 
     public function create()
