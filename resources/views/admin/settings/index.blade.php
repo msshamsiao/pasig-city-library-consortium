@@ -18,23 +18,17 @@
     </div>
     @endif
 
-    <!-- Settings Tabs -->
+    @if(session('error'))
+    <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+        {{ session('error') }}
+    </div>
+    @endif
+
+    <!-- General Settings -->
     <div class="bg-white rounded-lg shadow-sm">
-        <div class="border-b border-gray-200">
-            <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
-                <button class="border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    General
-                </button>
-                <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    System
-                </button>
-                <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    Notifications
-                </button>
-                <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    Security
-                </button>
-            </nav>
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">General Settings</h3>
+            <p class="text-sm text-gray-600 mt-1">Configure basic system settings</p>
         </div>
 
         <div class="p-6">
@@ -124,42 +118,6 @@
                     </select>
                 </div>
 
-                <!-- Maintenance Mode -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-900">Maintenance Mode</h4>
-                        <p class="text-sm text-gray-500">Enable maintenance mode to restrict access</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="maintenance_mode" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                </div>
-
-                <!-- Email Notifications -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-900">Email Notifications</h4>
-                        <p class="text-sm text-gray-500">Send email notifications for important events</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="email_notifications" checked class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                </div>
-
-                <!-- Auto Approval -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-900">Auto Approval</h4>
-                        <p class="text-sm text-gray-500">Automatically approve new library activities</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="auto_approval" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                </div>
-
                 <!-- Save Button -->
                 <div class="flex justify-end gap-3 pt-6 border-t">
                     <button type="button" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
@@ -173,39 +131,225 @@
         </div>
     </div>
 
-    <!-- System Information -->
+    <!-- Super Admins Management -->
     <div class="bg-white rounded-lg shadow-sm p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">System Information</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="flex justify-between items-center mb-4">
             <div>
-                <p class="text-sm text-gray-600">Laravel Version</p>
-                <p class="text-lg font-medium text-gray-900">{{ app()->version() }}</p>
+                <h3 class="text-lg font-semibold text-gray-900">Super Administrators</h3>
+                <p class="text-sm text-gray-600 mt-1">Manage system administrators</p>
             </div>
-            <div>
-                <p class="text-sm text-gray-600">PHP Version</p>
-                <p class="text-lg font-medium text-gray-900">{{ PHP_VERSION }}</p>
-            </div>
-            <div>
-                <p class="text-sm text-gray-600">Database</p>
-                <p class="text-lg font-medium text-gray-900">MySQL</p>
-            </div>
+            <button onclick="openAddAdminModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Super Admin
+            </button>
         </div>
-    </div>
 
-    <!-- Cache Management -->
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cache Management</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition">
-                Clear Application Cache
-            </button>
-            <button class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition">
-                Clear Route Cache
-            </button>
-            <button class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition">
-                Clear View Cache
-            </button>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($superAdmins as $admin)
+                    <tr>
+                        <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                            {{ $admin->name }}
+                            @if($admin->id === auth()->id())
+                                <span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">You</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-700">{{ $admin->email }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">{{ $admin->created_at->format('M d, Y') }}</td>
+                        <td class="px-4 py-3 text-sm">
+                            <div class="flex items-center gap-2">
+                                <!-- Edit button -->
+                                <button onclick="openEditAdminModal({{ $admin->id }}, '{{ $admin->name }}', '{{ $admin->email }}')" 
+                                        class="p-2 text-green-600 hover:bg-green-50 rounded-full transition" title="Edit">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </button>
+                                <!-- Delete button -->
+                                @if($admin->id !== auth()->id())
+                                <form action="{{ route('admin.settings.super-admins.destroy', $admin) }}" method="POST" class="inline" 
+                                      onsubmit="return confirm('Are you sure you want to delete this Super Admin?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-full transition" title="Delete">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                            No super admins found
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+<!-- Add Super Admin Modal -->
+<div id="addAdminModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Add Super Admin</h3>
+            <button onclick="closeAddAdminModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form action="{{ route('admin.settings.super-admins.store') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label for="add_name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input type="text" id="add_name" name="name" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('name')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="add_email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" id="add_email" name="email" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('email')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="add_password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="add_password" name="password" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('password')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="add_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <input type="password" id="add_password_confirmation" name="password_confirmation" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex justify-end gap-2 pt-4">
+                <button type="button" onclick="closeAddAdminModal()" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Create Admin
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Super Admin Modal -->
+<div id="editAdminModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Edit Super Admin</h3>
+            <button onclick="closeEditAdminModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="editAdminForm" method="POST" class="space-y-4">
+            @csrf
+            @method('PUT')
+            <div>
+                <label for="edit_name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input type="text" id="edit_name" name="name" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('name')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="edit_email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" id="edit_email" name="email" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('email')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="edit_password" class="block text-sm font-medium text-gray-700 mb-1">New Password (leave blank to keep current)</label>
+                <input type="password" id="edit_password" name="password" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('password')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="edit_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <input type="password" id="edit_password_confirmation" name="password_confirmation" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex justify-end gap-2 pt-4">
+                <button type="button" onclick="closeEditAdminModal()" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Update Admin
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openAddAdminModal() {
+    document.getElementById('addAdminModal').classList.remove('hidden');
+}
+
+function closeAddAdminModal() {
+    document.getElementById('addAdminModal').classList.add('hidden');
+}
+
+function openEditAdminModal(id, name, email) {
+    document.getElementById('editAdminForm').action = `/admin/settings/super-admins/${id}`;
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_password').value = '';
+    document.getElementById('edit_password_confirmation').value = '';
+    document.getElementById('editAdminModal').classList.remove('hidden');
+}
+
+function closeEditAdminModal() {
+    document.getElementById('editAdminModal').classList.add('hidden');
+}
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    const addModal = document.getElementById('addAdminModal');
+    const editModal = document.getElementById('editAdminModal');
+    if (event.target === addModal) {
+        closeAddAdminModal();
+    }
+    if (event.target === editModal) {
+        closeEditAdminModal();
+    }
+}
+</script>
 @endsection

@@ -117,8 +117,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
     
     // Settings
-    Route::get('settings', [SettingController::class, 'index'])->name('settings');
-    Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
+    Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    Route::post('settings/super-admins', [\App\Http\Controllers\Admin\SettingsController::class, 'storeSuperAdmin'])->name('settings.super-admins.store');
+    Route::put('settings/super-admins/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'updateSuperAdmin'])->name('settings.super-admins.update');
+    Route::delete('settings/super-admins/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroySuperAdmin'])->name('settings.super-admins.destroy');
 });
 
 /*
