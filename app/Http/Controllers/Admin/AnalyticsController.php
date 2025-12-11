@@ -13,8 +13,11 @@ class AnalyticsController extends Controller
 {
     public function index()
     {
-        // Get all member libraries with their statistics
-        $libraries = Library::all()->map(function($library) {
+        // Get paginated libraries
+        $librariesPaginated = Library::orderBy('name', 'asc')->paginate(10);
+        
+        // Map statistics for each library
+        $libraries = $librariesPaginated->through(function($library) {
             // Count members associated with this library
             $memberCount = User::where('library_id', $library->id)
                 ->where('role', 'borrower')
@@ -26,7 +29,7 @@ class AnalyticsController extends Controller
                 ->whereIn('status', ['approved', 'borrowed'])
                 ->count();
 
-            return [
+            return (object)[
                 'id' => $library->id,
                 'name' => $library->name,
                 'address' => $library->address,
