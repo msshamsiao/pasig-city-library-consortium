@@ -12,8 +12,8 @@ class LibrariesController extends Controller
      */
     public function index()
     {
-        // Fetch all active libraries from database, ordered
-        $libraries = Library::active()->ordered()->get();
+        // Fetch all active libraries from database, ordered by name
+        $libraries = Library::active()->orderBy('name', 'asc')->get();
 
         return view('libraries', compact('libraries'));
     }
