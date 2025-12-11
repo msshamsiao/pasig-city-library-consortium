@@ -8,15 +8,29 @@ use Illuminate\Http\Request;
 
 class BookRequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Show all book requests - librarians can view all requests from their library's users
-        $bookRequests = BookRequest::whereHas('user', function($query) {
-                $query->where('library_id', auth()->user()->library_id);
+        $query = BookRequest::whereHas('user', function($q) {
+                $q->where('library_id', auth()->user()->library_id);
             })
-            ->with('user')
-            ->latest()
-            ->paginate(20);
+            ->with('user');
+        
+        // Filter by status
+        $status = $request->get('status', 'pending');
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        // Filter by date range (for completed and lapsed)
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+        
+        $bookRequests = $query->latest()->paginate(20);
         
         return view('librarian.book-requests.index', compact('bookRequests'));
     }
