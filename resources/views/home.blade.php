@@ -13,8 +13,7 @@
                 <!-- Category Dropdown -->
                 <div class="w-36">
                     <select x-model="category" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="all">All</option>
-                        <option value="book">Book</option>
+                        <option value="all">All Categories</option>
                         <option value="title">Title</option>
                         <option value="author">Author</option>
                         <option value="subject">Subject</option>
