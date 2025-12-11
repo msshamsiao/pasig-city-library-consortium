@@ -19,7 +19,6 @@ class ArchiveController extends Controller
             ->paginate(10);
 
         $archivedBooks = Book::onlyTrashed()
-            ->with('library')
             ->orderBy('deleted_at', 'desc')
             ->paginate(10);
 
