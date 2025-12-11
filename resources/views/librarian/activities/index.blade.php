@@ -59,7 +59,7 @@
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Start</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">End</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Posting Date</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
@@ -89,8 +89,13 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-3 py-2">
-                            <div class="text-xs text-gray-700">{{ Str::limit($activity->location ?? 'N/A', 20) }}</div>
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            <div class="text-xs text-gray-700">
+                                {{ $activity->created_at->format('M d, Y') }}
+                                @if($activity->created_at->format('Y-m-d') !== $activity->updated_at->format('Y-m-d'))
+                                    <br><span class="text-gray-500">to {{ $activity->updated_at->format('M d, Y') }}</span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-3 py-2 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs font-medium rounded
@@ -102,9 +107,23 @@
                                 {{ ucfirst($activity->approval_status ?? 'pending') }}
                             </span>
                         </td>
-                        <td class="px-3 py-2 whitespace-nowrap text-xs">
+                        <td class="px-3 py-2 whitespace-nowrap">
                             @if($activity->approval_status === 'pending' || $activity->approval_status === 'rejected')
-                                <a href="{{ route('librarian.activities.edit', $activity->id) }}" class="text-blue-600 hover:text-blue-900">Edit</a>
+                                <a href="{{ route('librarian.activities.edit', $activity->id) }}" class="p-2 text-green-600 hover:bg-green-50 rounded-full transition inline-block" title="Update">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                            @elseif($activity->approval_status === 'approved')
+                                <form action="{{ route('librarian.activities.destroy', $activity->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to cancel this activity?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-full transition inline-block" title="Cancel">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </form>
                             @else
                                 <span class="text-gray-400">-</span>
                             @endif

@@ -97,9 +97,17 @@
                                 <div class="flex gap-2">
                                     <form action="{{ route('librarian.book-requests.approve', $request->id) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Approve</button>
+                                        <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-full transition inline-block" title="Approve">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                        </button>
                                     </form>
-                                    <button onclick="showRejectModal({{ $request->id }})" class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Reject</button>
+                                    <button onclick="showRejectModal({{ $request->id }})" class="p-2 text-red-600 hover:bg-red-50 rounded-full transition inline-block" title="Reject">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             @elseif($request->status === 'approved')
                                 <span class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded">Approved</span>

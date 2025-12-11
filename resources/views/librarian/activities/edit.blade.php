@@ -48,26 +48,6 @@
                     @enderror
                 </div>
 
-                <!-- Category -->
-                <div class="mb-4">
-                    <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
-                        Category
-                    </label>
-                    <select name="category" id="category"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('category') border-red-500 @enderror">
-                        <option value="">Select a category</option>
-                        <option value="Workshop" {{ old('category', $activity->category) == 'Workshop' ? 'selected' : '' }}>Workshop</option>
-                        <option value="Seminar" {{ old('category', $activity->category) == 'Seminar' ? 'selected' : '' }}>Seminar</option>
-                        <option value="Reading Program" {{ old('category', $activity->category) == 'Reading Program' ? 'selected' : '' }}>Reading Program</option>
-                        <option value="Book Club" {{ old('category', $activity->category) == 'Book Club' ? 'selected' : '' }}>Book Club</option>
-                        <option value="Training" {{ old('category', $activity->category) == 'Training' ? 'selected' : '' }}>Training</option>
-                        <option value="Other" {{ old('category', $activity->category) == 'Other' ? 'selected' : '' }}>Other</option>
-                    </select>
-                    @error('category')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
                 <!-- Activity Date -->
                 <div class="mb-4">
                     <label for="activity_date" class="block text-sm font-medium text-gray-700 mb-1">
@@ -81,7 +61,7 @@
                 </div>
 
                 <!-- Time Start and End -->
-                <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-2 gap-4 mb-6">
                     <div>
                         <label for="time_start" class="block text-sm font-medium text-gray-700 mb-1">
                             Start Time
@@ -102,33 +82,6 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
-
-                <!-- Location -->
-                <div class="mb-4">
-                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">
-                        Location
-                    </label>
-                    <input type="text" name="location" id="location" value="{{ old('location', $activity->location) }}"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('location') border-red-500 @enderror"
-                        placeholder="e.g., Library Main Hall, Room 201">
-                    @error('location')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Max Participants -->
-                <div class="mb-6">
-                    <label for="max_participants" class="block text-sm font-medium text-gray-700 mb-1">
-                        Maximum Participants
-                    </label>
-                    <input type="number" name="max_participants" id="max_participants" value="{{ old('max_participants', $activity->max_participants) }}" min="1"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('max_participants') border-red-500 @enderror"
-                        placeholder="Leave empty for unlimited">
-                    @error('max_participants')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    <p class="mt-1 text-xs text-gray-500">Optional: Set a limit for the number of participants</p>
                 </div>
 
                 <!-- Submit Buttons -->
