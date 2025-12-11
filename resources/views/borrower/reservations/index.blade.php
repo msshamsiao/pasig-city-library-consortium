@@ -157,12 +157,34 @@
         <form action="{{ route('borrower.reservations.store') }}" method="POST" id="reservationForm">
             @csrf
             
+            <!-- Search Filters -->
+            <div class="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Search By</label>
+                    <select id="searchCategory" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">All (Title, Author, Subject)</option>
+                        <option value="title">Title</option>
+                        <option value="author">Author</option>
+                        <option value="subject">Subject/Category</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Library</label>
+                    <select id="searchLibrary" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Libraries</option>
+                        @foreach(\App\Models\Library::where('is_active', true)->get() as $lib)
+                            <option value="{{ $lib->id }}">{{ $lib->acronym }} - {{ $lib->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            
             <!-- Search Section -->
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Search for Book</label>
                 <div class="relative">
                     <input type="text" id="bookSearch" 
-                           placeholder="Search by title, author, or ISBN..."
+                           placeholder="Search by title, author, or subject..."
                            class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>

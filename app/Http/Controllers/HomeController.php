@@ -38,12 +38,16 @@ class HomeController extends Controller
         $library = $request->input('library', 'all');
         $search = $request->input('search', '');
 
-        $query = Holding::query();
+        $query = Holding::with('library');
+
+        // Filter by library branch
+        if ($library !== 'all' && !empty($library)) {
+            $query->where('holding_branch_id', $library);
+        }
 
         // Filter by search term based on category
         if (!empty($search)) {
             switch ($category) {
-                case 'book':
                 case 'title':
                     $query->where('title', 'like', '%' . $search . '%');
                     break;
@@ -51,21 +55,18 @@ class HomeController extends Controller
                     $query->where('author', 'like', '%' . $search . '%');
                     break;
                 case 'subject':
-                    $query->where('category', 'like', '%' . $search . '%');
+                    $query->where('description', 'like', '%' . $search . '%');
                     break;
                 case 'all':
                 default:
                     $query->where(function($q) use ($search) {
                         $q->where('title', 'like', '%' . $search . '%')
                           ->orWhere('author', 'like', '%' . $search . '%')
-                          ->orWhere('isbn', 'like', '%' . $search . '%')
-                          ->orWhere('category', 'like', '%' . $search . '%');
+                          ->orWhere('description', 'like', '%' . $search . '%');
                     });
                     break;
             }
         }
-
-        // Note: Library filter not implemented yet - needs library_id in books table
 
         $books = $query->limit(50)->get();
 

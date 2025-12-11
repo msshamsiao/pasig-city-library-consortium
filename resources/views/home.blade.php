@@ -40,6 +40,7 @@
                         </span>
                         <input 
                             x-model="search"
+                            @keyup.enter="performSearch()"
                             type="text" 
                             placeholder="Enter Title, Author, or Subject..." 
                             class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -316,8 +317,21 @@ function searchComponent() {
         searchResults: [],
         isLoading: false,
         
+        init() {
+            // Watch for Enter key on search input
+            this.$watch('search', () => {
+                if (event && event.keyCode === 13) {
+                    this.performSearch();
+                }
+            });
+        },
+        
         performSearch() {
-            console.log('Search clicked');
+            console.log('Search params:', {
+                category: this.category,
+                library: this.library,
+                search: this.search
+            });
             
             if (!this.search.trim()) {
                 alert('Please enter a search term');

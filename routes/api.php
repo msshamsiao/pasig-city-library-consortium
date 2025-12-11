@@ -20,15 +20,29 @@ Route::middleware('cors')->group(function () {
 // Holdings search endpoint
 Route::get('/holdings/search', function (Request $request) {
     $query = $request->input('q');
+    $category = $request->input('category', 'all'); // all, author, title, subject
+    $library = $request->input('library'); // library branch ID
     
-    $holdings = \App\Models\Holding::where('status', 'available')
-        ->where(function($q) use ($query) {
-            $q->where('title', 'LIKE', "%{$query}%")
-              ->orWhere('author', 'LIKE', "%{$query}%")
-              ->orWhere('isbn', 'LIKE', "%{$query}%");
+    $holdings = \App\Models\Holding::with('library')
+        ->where('status', 'available')
+        ->when($library, function($q) use ($library) {
+            $q->where('holding_branch_id', $library);
+        })
+        ->where(function($q) use ($query, $category) {
+            if ($category === 'author') {
+                $q->where('author', 'LIKE', "%{$query}%");
+            } elseif ($category === 'title') {
+                $q->where('title', 'LIKE', "%{$query}%");
+            } elseif ($category === 'subject') {
+                $q->where('category', 'LIKE', "%{$query}%");
+            } else { // all
+                $q->where('title', 'LIKE', "%{$query}%")
+                  ->orWhere('author', 'LIKE', "%{$query}%")
+                  ->orWhere('category', 'LIKE', "%{$query}%");
+            }
         })
         ->limit(10)
-        ->get(['id', 'title', 'author', 'isbn', 'available_copies']);
+        ->get(['id', 'title', 'author', 'isbn', 'category', 'available_copies', 'holding_branch_id']);
     
     return response()->json($holdings);
 });
