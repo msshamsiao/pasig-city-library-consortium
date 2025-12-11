@@ -167,6 +167,26 @@
 
             <!-- Right Content Area -->
             <div class="lg:col-span-3 space-y-6">
+                <!-- Survey Banner -->
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe4EKCT3DEPlMlDX7K3DHAhxpWbf3qJA748cf-HNiDjrv4IRA/viewform" target="_blank" class="block bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-700 rounded-lg p-6 hover:from-blue-700 hover:to-blue-800 transition transform hover:scale-[1.02] shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/20 rounded-full p-3">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-1">Help Us Improve!</h3>
+                                <p class="text-blue-100">Take our quick survey and share your feedback</p>
+                            </div>
+                        </div>
+                        <svg class="w-6 h-6 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
                 <!-- Welcome Message -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6">
                     <h3 class="text-2xl font-bold text-blue-600 mb-4">Welcome</h3>
