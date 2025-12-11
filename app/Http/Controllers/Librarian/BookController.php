@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Librarian;
 use App\Http\Controllers\Controller;
 use App\Models\Holding;
 use App\Models\Library;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class BookController extends Controller
 {
     public function index()
     {
-        $libraryId = auth()->user()->library_id;
+        $libraryId = Auth::user()->library_id;
         
         // If no library assigned, show all books
         if (!$libraryId) {
@@ -51,7 +54,16 @@ class BookController extends Controller
             $validated['available_copies'] = $validated['total_copies'];
             $validated['status'] = 'available';
 
-            Holding::create($validated);
+            $book = Holding::create($validated);
+
+            AuditLog::log(
+                'create',
+                'Holding',
+                "Added new book: {$book->title} by {$book->author} (ISBN: {$book->isbn})",
+                $book->id,
+                null,
+                $validated
+            );
 
             return redirect()->route('librarian.books.index')
                 ->with('success', 'Book added successfully.');
@@ -92,7 +104,17 @@ class BookController extends Controller
             $validated['available_copies'] = 0;
         }
 
+        $oldValues = $book->getOriginal();
         $book->update($validated);
+
+        AuditLog::log(
+            'update',
+            'Holding',
+            "Updated book: {$book->title} (ISBN: {$book->isbn})",
+            $book->id,
+            $oldValues,
+            $validated
+        );
 
         return redirect()->route('librarian.books.index')
             ->with('success', 'Book updated successfully.');
@@ -153,8 +175,8 @@ class BookController extends Controller
             $holdingsToInsert = [];
             
             // Log columns found for debugging
-            \Log::info('CSV Upload - Columns found: ' . $headersList);
-            \Log::info('CSV Upload - Total rows to process: ' . count($csv));
+            Log::info('CSV Upload - Columns found: ' . $headersList);
+            Log::info('CSV Upload - Total rows to process: ' . count($csv));
             
             // Get existing ISBNs from database to avoid duplicates
             $existingIsbns = Holding::pluck('isbn')->toArray();

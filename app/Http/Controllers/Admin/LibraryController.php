@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Library;
 use App\Models\Holding;
 use App\Models\User;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class LibraryController extends Controller
@@ -14,19 +15,20 @@ class LibraryController extends Controller
     {
         // Get only active libraries (not archived)
         $libraries = Library::orderBy('name', 'asc')->get()->map(function($library) {
-            // Count members for this library
-            $totalMembers = User::where('library_id', $library->id)
-                ->where('role', 'borrower')
-                ->count();
+            // Count books in this specific library branch
+            $totalBooks = Holding::where('holding_branch_id', $library->id)->count();
+            
+            // Count members from this library (by library_branch acronym in members table)
+            $totalMembers = \App\Models\Member::where('library_branch', $library->acronym)->count();
 
-            // Get user IDs from this library
-            $userIds = User::where('library_id', $library->id)->pluck('id');
-
-            // Count active requests from users of this library
-            $activeRequests = 0; // Removed book requests functionality
+            // Count active requests (pending/reserved) for books in this library
+            $activeRequests = \App\Models\Borrowing::whereIn('status', ['pending', 'reserved'])
+                ->whereHas('holding', function($query) use ($library) {
+                    $query->where('holding_branch_id', $library->id);
+                })->count();
 
             // Add statistics to library object
-            $library->total_books = Holding::count(); // Shared consortium books
+            $library->total_books = $totalBooks;
             $library->total_members = $totalMembers;
             $library->active_requests = $activeRequests;
 
@@ -36,7 +38,7 @@ class LibraryController extends Controller
         // Calculate overall statistics
         $totalLibraries = Library::count();
         $totalBooks = Holding::count();
-        $totalMembers = User::where('role', 'borrower')->count();
+        $totalMembers = \App\Models\Member::count();
 
         return view('admin.libraries', compact('libraries', 'totalLibraries', 'totalBooks', 'totalMembers'));
     }
@@ -67,7 +69,16 @@ class LibraryController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
-        Library::create($validated);
+        $library = Library::create($validated);
+
+        AuditLog::log(
+            'create',
+            'Library',
+            "Created library: {$library->name}",
+            $library->id,
+            null,
+            $validated
+        );
 
         return redirect()->route('admin.libraries.index')
             ->with('success', 'Library created successfully.');
@@ -91,7 +102,21 @@ class LibraryController extends Controller
 
     public function destroy(Library $library)
     {
+        $libraryName = $library->name;
+        $libraryId = $library->id;
+        $oldValues = $library->toArray();
+        
         $library->delete();
+        
+        AuditLog::log(
+            'delete',
+            'Library',
+            "Archived library: {$libraryName}",
+            $libraryId,
+            $oldValues,
+            null
+        );
+        
         return redirect()->route('admin.libraries.index')
             ->with('success', 'Library archived successfully.');
     }
@@ -100,6 +125,16 @@ class LibraryController extends Controller
     {
         $library = Library::onlyTrashed()->findOrFail($id);
         $library->restore();
+        
+        AuditLog::log(
+            'restore',
+            'Library',
+            "Restored library: {$library->name}",
+            $library->id,
+            null,
+            $library->toArray()
+        );
+        
         return redirect()->route('admin.libraries.index')
             ->with('success', 'Library restored successfully.');
     }

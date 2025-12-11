@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Borrower;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
 {
     public function index()
     {
         // Get member record
-        $member = \App\Models\Member::where('user_id', auth()->id())->first();
+        $member = \App\Models\Member::where('user_id', Auth::id())->first();
         
         if (!$member) {
             $reservations = \App\Models\Borrowing::whereNull('id')->paginate(10);
@@ -35,14 +38,14 @@ class ReservationController extends Controller
         ]);
 
         // Check if user has a member record
-        $member = \App\Models\Member::where('user_id', auth()->id())->first();
+        $member = \App\Models\Member::where('user_id', Auth::id())->first();
         
         if (!$member) {
             // Log for debugging
-            \Log::info('Member not found for user_id: ' . auth()->id() . ', email: ' . auth()->user()->email);
+            Log::info('Member not found for user_id: ' . Auth::id() . ', email: ' . Auth::user()->email);
             
             return redirect()->route('borrower.reservations.index')
-                ->with('error', 'You must be a registered member to reserve books. Please contact the librarian. (User ID: ' . auth()->id() . ')');
+                ->with('error', 'You must be a registered member to reserve books. Please contact the librarian. (User ID: ' . Auth::id() . ')');
         }
 
         // Check if the holding is available
@@ -57,7 +60,7 @@ class ReservationController extends Controller
         $borrowDate = $validated['date_schedule'] . ' ' . $validated['date_time'];
         $dueDate = date('Y-m-d', strtotime($borrowDate . ' + 14 days'));
 
-        \App\Models\Borrowing::create([
+        $borrowing = \App\Models\Borrowing::create([
             'holding_id' => $validated['holding_id'],
             'member_id' => $member->id,
             'borrowed_date' => $borrowDate,
@@ -65,6 +68,15 @@ class ReservationController extends Controller
             'status' => 'pending',
             'notes' => 'Reservation request via online system. Scheduled pickup: ' . $borrowDate,
         ]);
+
+        AuditLog::log(
+            'create',
+            'Borrowing',
+            "Member " . Auth::user()->name . " requested reservation for book: {$holding->title}",
+            $borrowing->id,
+            null,
+            ['holding_id' => $holding->id, 'book_title' => $holding->title, 'status' => 'pending', 'scheduled_pickup' => $borrowDate]
+        );
 
         return redirect()->route('borrower.reservations.index')
             ->with('success', 'Reservation request submitted successfully! Please wait for librarian approval.');

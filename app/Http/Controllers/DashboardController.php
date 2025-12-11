@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Holding;
 use App\Models\Library;
 use App\Models\User;
@@ -12,7 +13,7 @@ class DashboardController extends Controller
     public function index()
     {
         // Get current user (librarian)
-        $user = auth()->user();
+        $user = Auth::user();
         
         // Get library information (from first library for now)
         $library = Library::first();

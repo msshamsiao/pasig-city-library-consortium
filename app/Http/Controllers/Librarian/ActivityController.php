@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Librarian;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ActivityController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Activity::where('library_id', auth()->user()->library_id);
+        $query = Activity::where('library_id', Auth::user()->library_id);
         
         // Filter by library if provided
         if ($request->filled('library')) {
@@ -41,11 +43,20 @@ class ActivityController extends Controller
             'max_participants' => 'nullable|integer|min:1',
         ]);
 
-        $validated['library_id'] = auth()->user()->library_id;
-        $validated['created_by'] = auth()->id();
+        $validated['library_id'] = Auth::user()->library_id;
+        $validated['created_by'] = Auth::id();
         $validated['status'] = 'pending'; // Needs super admin approval
 
-        Activity::create($validated);
+        $activity = Activity::create($validated);
+
+        AuditLog::log(
+            'create',
+            'Activity',
+            "Created activity: {$activity->title} (Date: {$activity->activity_date})",
+            $activity->id,
+            null,
+            ['title' => $activity->title, 'activity_date' => $activity->activity_date, 'status' => 'pending']
+        );
 
         return redirect()->route('librarian.activities.index')
             ->with('success', 'Activity created and submitted for approval.');
@@ -54,7 +65,7 @@ class ActivityController extends Controller
     public function edit(Activity $activity)
     {
         // Check if activity belongs to librarian's library
-        if ($activity->library_id != auth()->user()->library_id) {
+        if ($activity->library_id != Auth::user()->library_id) {
             abort(403);
         }
 
@@ -64,7 +75,7 @@ class ActivityController extends Controller
     public function update(Request $request, Activity $activity)
     {
         // Check if activity belongs to librarian's library
-        if ($activity->library_id != auth()->user()->library_id) {
+        if ($activity->library_id != Auth::user()->library_id) {
             abort(403);
         }
 
@@ -77,7 +88,17 @@ class ActivityController extends Controller
             'max_participants' => 'nullable|integer|min:1',
         ]);
 
+        $oldValues = $activity->only(['title', 'activity_date', 'activity_time']);
         $activity->update($validated);
+
+        AuditLog::log(
+            'update',
+            'Activity',
+            "Updated activity: {$activity->title}",
+            $activity->id,
+            $oldValues,
+            $validated
+        );
 
         return redirect()->route('librarian.activities.index')
             ->with('success', 'Activity updated successfully.');

@@ -7,13 +7,14 @@ use App\Models\Holding;
 use App\Models\User;
 use App\Models\Library;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         // Get current user (librarian/admin)
-        $user = auth()->user();
+        $user = Auth::user();
         
         // Get library information (from first library for now)
         $library = Library::first();

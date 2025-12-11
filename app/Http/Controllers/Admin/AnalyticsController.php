@@ -17,22 +17,25 @@ class AnalyticsController extends Controller
         
         // Map statistics for each library
         $libraries = $librariesPaginated->through(function($library) {
-            // Count members associated with this library
-            $memberCount = User::where('library_id', $library->id)
-                ->where('role', 'borrower')
-                ->count();
-
-            // Count borrowed books from users of this library
-            $userIds = User::where('library_id', $library->id)->pluck('id');
-            $borrowedCount = 0; // Removed book requests functionality
+            // Count books in this specific library's holdings
+            $totalBooks = Holding::where('holding_branch_id', $library->id)->count();
+            
+            // Count members with this library's acronym
+            $totalMembers = \App\Models\Member::where('library_branch', $library->acronym)->count();
+            
+            // Count active requests for books in this library
+            $activeRequests = \App\Models\Borrowing::whereIn('status', ['pending', 'reserved'])
+                ->whereHas('holding', function($query) use ($library) {
+                    $query->where('holding_branch_id', $library->id);
+                })->count();
 
             return [
                 'id' => $library->id,
                 'name' => $library->name,
                 'address' => $library->address,
-                'total_books' => Holding::count(), // Shared consortium books
-                'books_borrowed' => $borrowedCount,
-                'total_members' => $memberCount,
+                'total_books' => $totalBooks,
+                'books_borrowed' => $activeRequests,
+                'total_members' => $totalMembers,
             ];
         });
 

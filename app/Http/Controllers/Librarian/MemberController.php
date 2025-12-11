@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Librarian;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
     public function index()
     {
-        $libraryId = auth()->user()->library_id;
+        $libraryId = Auth::user()->library_id;
         
         // If no library assigned, show all borrowers
         if (!$libraryId) {
@@ -55,10 +57,19 @@ class MemberController extends Controller
         ]);
 
         $validated['role'] = 'borrower';
-        $validated['library_id'] = auth()->user()->library_id;
+        $validated['library_id'] = Auth::user()->library_id;
         $validated['password'] = bcrypt($validated['password']);
 
-        User::create($validated);
+        $member = User::create($validated);
+
+        AuditLog::log(
+            'create',
+            'User',
+            "Created new member: {$member->name} ({$member->email})",
+            $member->id,
+            null,
+            ['name' => $member->name, 'email' => $member->email, 'role' => 'borrower']
+        );
 
         return redirect()->route('librarian.members.index')
             ->with('success', 'Member created successfully.');
@@ -67,7 +78,7 @@ class MemberController extends Controller
     public function edit(User $member)
     {
         // Ensure the member belongs to the same library
-        if ($member->library_id !== auth()->user()->library_id) {
+        if ($member->library_id !== Auth::user()->library_id) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -77,7 +88,7 @@ class MemberController extends Controller
     public function update(Request $request, User $member)
     {
         // Ensure the member belongs to the same library
-        if ($member->library_id !== auth()->user()->library_id) {
+        if ($member->library_id !== Auth::user()->library_id) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -96,7 +107,17 @@ class MemberController extends Controller
             unset($validated['password']);
         }
 
+        $oldValues = $member->only(['name', 'email', 'phone', 'address']);
         $member->update($validated);
+
+        AuditLog::log(
+            'update',
+            'User',
+            "Updated member: {$member->name} ({$member->email})",
+            $member->id,
+            $oldValues,
+            $member->only(['name', 'email', 'phone', 'address'])
+        );
 
         return redirect()->route('librarian.members.index')
             ->with('success', 'Member updated successfully.');
@@ -154,7 +175,7 @@ class MemberController extends Controller
                         'phone' => $data['phone'] ?? null,
                         'address' => $data['address'] ?? null,
                         'role' => 'borrower',
-                        'library_id' => auth()->user()->library_id,
+                        'library_id' => Auth::user()->library_id,
                     ]);
                     
                     $imported++;

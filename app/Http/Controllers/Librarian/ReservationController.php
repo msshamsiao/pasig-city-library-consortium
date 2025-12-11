@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Librarian;
 use App\Http\Controllers\Controller;
 use App\Models\Borrowing;
 use App\Models\Holding;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
@@ -14,7 +16,7 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $libraryId = auth()->user()->library_id;
+        $libraryId = Auth::user()->library_id;
         
         $reservations = Borrowing::with(['holding.library', 'member.user'])
             ->whereIn('status', ['pending', 'reserved', 'borrowed'])
@@ -42,6 +44,15 @@ class ReservationController extends Controller
 
         $borrowing->update(['status' => 'reserved']);
 
+        AuditLog::log(
+            'approve',
+            'Borrowing',
+            "Approved book reservation for member {$borrowing->member->user->name} - Book: {$borrowing->holding->title}",
+            $borrowing->id,
+            ['status' => 'pending'],
+            ['status' => 'reserved']
+        );
+
         return back()->with('success', 'Reservation approved successfully!');
     }
 
@@ -56,10 +67,20 @@ class ReservationController extends Controller
             return back()->with('error', 'Only pending reservations can be rejected.');
         }
 
+        $reason = $request->input('reason', 'No reason provided');
         $borrowing->update([
             'status' => 'rejected',
-            'notes' => ($borrowing->notes ?? '') . "\nRejected: " . $request->input('reason', 'No reason provided')
+            'notes' => ($borrowing->notes ?? '') . "\nRejected: " . $reason
         ]);
+
+        AuditLog::log(
+            'reject',
+            'Borrowing',
+            "Rejected book reservation for member {$borrowing->member->user->name} - Book: {$borrowing->holding->title} - Reason: {$reason}",
+            $borrowing->id,
+            ['status' => 'pending'],
+            ['status' => 'rejected', 'reason' => $reason]
+        );
 
         return back()->with('success', 'Reservation rejected.');
     }
@@ -86,6 +107,15 @@ class ReservationController extends Controller
             $holding->decrement('available_copies');
         }
 
+        AuditLog::log(
+            'borrow',
+            'Borrowing',
+            "Member {$borrowing->member->user->name} borrowed book: {$borrowing->holding->title}",
+            $borrowing->id,
+            ['status' => 'reserved'],
+            ['status' => 'borrowed', 'borrowed_date' => now()->toDateTimeString()]
+        );
+
         return back()->with('success', 'Book marked as borrowed successfully!');
     }
 
@@ -110,6 +140,15 @@ class ReservationController extends Controller
         if ($holding) {
             $holding->increment('available_copies');
         }
+
+        AuditLog::log(
+            'return',
+            'Borrowing',
+            "Member {$borrowing->member->user->name} returned book: {$borrowing->holding->title}",
+            $borrowing->id,
+            ['status' => 'borrowed'],
+            ['status' => 'returned', 'return_date' => now()->toDateTimeString()]
+        );
 
         return back()->with('success', 'Book marked as returned successfully!');
     }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\LibrariesController;
@@ -41,7 +42,8 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 
 // Dashboard - Redirect to role-specific dashboard
 Route::get('/dashboard', function () {
-    $user = auth()->user();
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
     
     if ($user->isSuperAdmin()) {
         return redirect()->route('admin.dashboard');
@@ -72,7 +74,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     Route::get('/archive', [\App\Http\Controllers\Admin\ArchiveController::class, 'index'])->name('archive');
     
     // Audit Trail
-    Route::get('/audit-trail', [\App\Http\Controllers\Admin\AuditTrailController::class, 'index'])->name('audit-trail');
+    Route::get('/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('/audit-logs/{auditLog}', [\App\Http\Controllers\Admin\AuditLogController::class, 'show'])->name('audit-logs.show');
     
     // Books Management
     Route::resource('books', BookController::class);
