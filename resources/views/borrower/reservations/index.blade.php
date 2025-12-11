@@ -116,7 +116,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex gap-1">
-                                        @if(in_array($reservation->status, ['pending', 'reserved']))
+                                        @if($reservation->status === 'pending')
                                             <form action="{{ route('borrower.reservations.cancel', $reservation) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
