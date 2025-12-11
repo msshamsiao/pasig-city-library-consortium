@@ -95,13 +95,19 @@
         <!-- Test Accounts Info -->
         <div class="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
             <p class="text-gray-700 font-medium">Demo Accounts:</p>
-            <div class="text-gray-600 space-y-1">
-                <p><span class="font-medium">Super Admin:</span> superadmin@pasigcitylibrary.gov.ph</p>
-                <p class="text-gray-500 text-xs">Password: <span class="font-mono">superadmin123</span></p>
-                <p><span class="font-medium">Librarian:</span> librarian@pasigcitylibrary.gov.ph</p>
-                <p class="text-gray-500 text-xs">Password: <span class="font-mono">librarian123</span></p>
-                <p><span class="font-medium">Borrower:</span> borrower@example.com</p>
-                <p class="text-gray-500 text-xs">Password: <span class="font-mono">borrower123</span></p>
+            <div class="text-gray-600 space-y-3">
+                <div>
+                    <p><span class="font-medium">Super Admin:</span> superadmin@pasigcitylibrary.gov.ph</p>
+                    <p class="text-gray-500 text-xs">Password: <span class="font-mono">superadmin123</span></p>
+                </div>
+                <div>
+                    <p><span class="font-medium">Librarian:</span> librarian@pasigcitylibrary.gov.ph</p>
+                    <p class="text-gray-500 text-xs">Password: <span class="font-mono">librarian123</span></p>
+                </div>
+                <div>
+                    <p><span class="font-medium">Borrower:</span> borrower@example.com</p>
+                    <p class="text-gray-500 text-xs">Password: <span class="font-mono">borrower123</span></p>
+                </div>
             </div>
         </div>
     </form>
