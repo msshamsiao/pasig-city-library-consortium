@@ -99,64 +99,39 @@
 
     <!-- Activities Table -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Library</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Activity</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Library</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Start</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">End</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($activities as $activity)
                 <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            @if($activity->has_image && $activity->image)
-                                <img src="{{ asset('storage/' . $activity->image) }}" alt="{{ $activity->title }}" class="w-12 h-12 rounded object-cover mr-3">
-                            @else
-                                <div class="w-12 h-12 bg-blue-100 rounded flex items-center justify-center mr-3">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                            @endif
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">{{ $activity->title }}</div>
-                                <div class="text-sm text-gray-500 line-clamp-1">{{ Str::limit($activity->description, 50) }}</div>
-                                @if($activity->location)
-                                <div class="text-xs text-gray-400 flex items-center mt-1">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                    {{ $activity->location }}
-                                </div>
-                                @endif
-                            </div>
-                        </div>
+                    <td class="px-3 py-2">
+                        <div class="text-sm font-medium text-gray-900">{{ Str::limit($activity->title, 30) }}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ $activity->library->name ?? 'N/A' }}</div>
+                    <td class="px-3 py-2">
+                        <div class="text-xs text-gray-700">{{ Str::limit($activity->library->name ?? 'N/A', 25) }}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        <div class="text-xs text-gray-900">
                             {{ $activity->start_date ? \Carbon\Carbon::parse($activity->start_date)->format('M d, Y') : \Carbon\Carbon::parse($activity->activity_date)->format('M d, Y') }}
                         </div>
-                        @if($activity->time_start && $activity->time_end)
-                        <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($activity->time_start)->format('g:i A') }} - {{ \Carbon\Carbon::parse($activity->time_end)->format('g:i A') }}</div>
-                        @endif
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        <div class="text-xs text-gray-900">
                             {{ $activity->end_date ? \Carbon\Carbon::parse($activity->end_date)->format('M d, Y') : 'N/A' }}
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-3 py-2 whitespace-nowrap">
                         @php
                             $categoryColors = [
                                 'announcement' => 'blue',
@@ -166,29 +141,29 @@
                             ];
                             $color = $categoryColors[$activity->category] ?? 'gray';
                         @endphp
-                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $color }}-100 text-{{ $color }}-800">
+                        <span class="px-2 py-1 text-xs font-medium rounded bg-{{ $color }}-100 text-{{ $color }}-800">
                             {{ ucfirst($activity->category) }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-3 py-2 whitespace-nowrap">
                         @if($activity->approval_status === 'pending')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            <span class="px-2 py-1 text-xs font-medium rounded bg-yellow-100 text-yellow-800">
                                 Pending
                             </span>
                         @elseif($activity->approval_status === 'approved')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            <span class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-800">
                                 Approved
                             </span>
                         @else
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            <span class="px-2 py-1 text-xs font-medium rounded bg-red-100 text-red-800">
                                 Rejected
                             </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div class="flex items-center gap-2">
-                            <button onclick="viewActivity({{ $activity->id }})" class="text-blue-600 hover:text-blue-900" title="View">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        <div class="flex items-center gap-1">
+                            <button onclick="viewActivity({{ $activity->id }})" class="text-blue-600 hover:text-blue-900 p-1" title="View">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
@@ -197,14 +172,14 @@
                                 <form action="{{ route('admin.activities.approve', $activity) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="text-green-600 hover:text-green-900" title="Approve">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <button type="submit" class="text-green-600 hover:text-green-900 p-1" title="Approve">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </button>
                                 </form>
-                                <button onclick="rejectActivity({{ $activity->id }})" class="text-red-600 hover:text-red-900" title="Reject">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button onclick="rejectActivity({{ $activity->id }})" class="text-red-600 hover:text-red-900 p-1" title="Reject">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </button>
@@ -224,6 +199,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Pagination -->

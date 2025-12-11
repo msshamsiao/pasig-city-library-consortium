@@ -67,6 +67,9 @@ class DatabaseSeeder extends Seeder
         $activities = [
             [
                 'activity_date' => '2025-01-15',
+                'start_date' => '2025-01-15',
+                'end_date' => '2025-01-15',
+                'library_id' => 1,
                 'title' => 'New Digital Collection Launch',
                 'description' => 'We are excited to announce the launch of our new digital collection featuring over 5,000 e-books, audiobooks, and digital magazines. This collection includes academic journals, fiction and non-fiction titles, and specialized research materials.',
                 'has_image' => true,
@@ -75,6 +78,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'activity_date' => '2025-01-10',
+                'start_date' => '2025-01-11',
+                'end_date' => '2025-01-11',
+                'library_id' => 2,
                 'title' => 'Reading Program for Children',
                 'description' => 'Join our monthly reading program designed for children ages 5-12. Every Saturday from 10 AM to 12 PM, we host interactive storytelling sessions, book discussions, and creative writing workshops.',
                 'has_image' => false,
@@ -83,6 +89,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'activity_date' => '2025-01-05',
+                'start_date' => '2025-02-01',
+                'end_date' => '2025-02-01',
+                'library_id' => 1,
                 'title' => 'Library Hours Extended',
                 'description' => 'Starting February 1st, all consortium libraries will extend their operating hours. Monday through Friday: 7 AM to 10 PM, Saturday: 8 AM to 8 PM, Sunday: 10 AM to 6 PM.',
                 'has_image' => false,
@@ -91,6 +100,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'activity_date' => '2024-12-28',
+                'start_date' => '2025-01-05',
+                'end_date' => '2025-03-05',
+                'library_id' => 3,
                 'title' => 'Research Workshop Series',
                 'description' => 'Learn advanced research techniques in our monthly workshop series. Topics include database navigation, citation management, academic writing, and digital literacy skills for students and professionals.',
                 'has_image' => true,
@@ -99,6 +111,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'activity_date' => '2024-12-20',
+                'start_date' => '2024-12-20',
+                'end_date' => '2025-01-15',
+                'library_id' => 4,
                 'title' => 'Holiday Reading Challenge',
                 'description' => 'Participate in our annual holiday reading challenge! Read at least 5 books during the holiday season and win prizes. Challenge runs from December 20 to January 15.',
                 'has_image' => false,
@@ -107,6 +122,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'activity_date' => '2024-12-15',
+                'start_date' => '2024-12-15',
+                'end_date' => '2024-12-15',
+                'library_id' => 2,
                 'title' => 'Author Meet and Greet',
                 'description' => 'Meet renowned Filipino authors in our special series of author talks and book signings. Join us for intimate discussions about their writing process and latest works.',
                 'has_image' => false,
@@ -115,6 +133,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'activity_date' => '2024-12-10',
+                'start_date' => '2024-12-10',
+                'end_date' => '2024-12-10',
+                'library_id' => 1,
                 'title' => 'Library Card Registration Drive',
                 'description' => 'Free library card registration for all Pasig City residents! Visit any consortium library with a valid ID and proof of residency to get your card on the spot.',
                 'has_image' => false,
@@ -123,6 +144,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'activity_date' => '2024-12-05',
+                'start_date' => '2024-12-05',
+                'end_date' => '2024-12-05',
+                'library_id' => 5,
                 'title' => 'Student Volunteer Program',
                 'description' => 'High school and college students can now apply for our volunteer program. Gain valuable experience in library operations while earning community service hours.',
                 'has_image' => false,

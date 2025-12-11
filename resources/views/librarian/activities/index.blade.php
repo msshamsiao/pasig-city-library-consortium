@@ -51,37 +51,37 @@
 
         <!-- Activities Table -->
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Activity</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Start</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">End</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($activities as $activity)
                     <tr>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">{{ $activity->title }}</div>
-                            <div class="text-xs text-gray-500">{{ Str::limit($activity->description, 50) }}</div>
+                        <td class="px-3 py-2">
+                            <div class="text-sm font-medium text-gray-900">{{ Str::limit($activity->title, 35) }}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            <div class="text-xs text-gray-900">
                                 {{ $activity->start_date ? \Carbon\Carbon::parse($activity->start_date)->format('M d, Y') : ($activity->activity_date->format('M d, Y')) }}
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            <div class="text-xs text-gray-900">
                                 {{ $activity->end_date ? \Carbon\Carbon::parse($activity->end_date)->format('M d, Y') : 'N/A' }}
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            <div class="text-xs text-gray-700">
                                 @if($activity->time_start && $activity->time_end)
                                     {{ $activity->time_start }} - {{ $activity->time_end }}
                                 @else
@@ -89,11 +89,11 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $activity->location ?? 'N/A' }}</div>
+                        <td class="px-3 py-2">
+                            <div class="text-xs text-gray-700">{{ Str::limit($activity->location ?? 'N/A', 20) }}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded
                                 @if($activity->approval_status === 'pending') bg-yellow-100 text-yellow-800
                                 @elseif($activity->approval_status === 'approved') bg-green-100 text-green-800
                                 @elseif($activity->approval_status === 'rejected') bg-red-100 text-red-800
@@ -102,7 +102,7 @@
                                 {{ ucfirst($activity->approval_status ?? 'pending') }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-3 py-2 whitespace-nowrap text-xs">
                             @if($activity->approval_status === 'pending' || $activity->approval_status === 'rejected')
                                 <a href="{{ route('librarian.activities.edit', $activity->id) }}" class="text-blue-600 hover:text-blue-900">Edit</a>
                             @else
@@ -128,6 +128,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
 
             <!-- Pagination -->
             @if($activities->hasPages())

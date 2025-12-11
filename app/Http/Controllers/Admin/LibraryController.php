@@ -13,15 +13,8 @@ class LibraryController extends Controller
 {
     public function index(Request $request)
     {
-        // Get libraries based on filter (active or archived)
-        $filter = $request->get('filter', 'active');
-        
-        $librariesQuery = $filter === 'archived' 
-            ? Library::onlyTrashed() 
-            : Library::query();
-            
-        // Get all libraries with their statistics
-        $libraries = $librariesQuery->orderBy('name', 'asc')->get()->map(function($library) {
+        // Get only active libraries (not archived)
+        $libraries = Library::orderBy('name', 'asc')->get()->map(function($library) {
             // Count members for this library
             $totalMembers = User::where('library_id', $library->id)
                 ->where('role', 'borrower')
