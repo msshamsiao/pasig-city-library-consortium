@@ -237,11 +237,16 @@
     </div>
 
     <!-- Pagination -->
-    @if($activities->hasPages())
-    <div class="bg-white rounded-lg shadow-sm px-6 py-3">
-        {{ $activities->links() }}
+    <div class="bg-white rounded-lg shadow-sm px-6 py-4 flex items-center justify-between">
+        <div class="text-sm text-gray-700">
+            Showing <span class="font-medium">{{ $activities->firstItem() ?? 0 }}</span> 
+            to <span class="font-medium">{{ $activities->lastItem() ?? 0 }}</span> 
+            of <span class="font-medium">{{ $activities->total() }}</span> activities
+        </div>
+        <div>
+            {{ $activities->links() }}
+        </div>
     </div>
-    @endif
 </div>
 
 <script>
