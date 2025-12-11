@@ -20,14 +20,11 @@
     <header class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
-                <!-- Left Logo and Title -->
-                <a href="{{ route('home') }}" class="flex items-center gap-4">
-                    <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="h-16 w-auto">
-                    <div class="flex flex-col">
-                        <span class="text-2xl font-bold text-blue-900 leading-tight">Pasig City Library</span>
-                        <span class="text-xl font-semibold text-blue-700 leading-tight">Consortium</span>
-                    </div>
-                    <img src="{{ asset('images/Pasig City Logo.png') }}" alt="Pasig City Logo" class="h-16 w-auto">
+                <!-- Logos and Title -->
+                <a href="{{ route('home') }}" class="flex items-center gap-3">
+                    <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="h-14 w-auto">
+                    <span class="text-xl font-bold text-blue-900">Pasig City Library Consortium</span>
+                    <img src="{{ asset('images/Pasig City Logo.png') }}" alt="Pasig City Logo" class="h-14 w-auto">
                 </a>
 
                 <!-- Date/Time and Login Button -->
