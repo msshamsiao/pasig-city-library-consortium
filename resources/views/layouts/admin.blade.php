@@ -129,13 +129,6 @@
                             </svg>
                             <span class="font-medium">My Reservations</span>
                         </a>
-
-                        <a href="{{ route('home') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                            <span class="font-medium">Search Books</span>
-                        </a>
                     @endif
                 </nav>
 
