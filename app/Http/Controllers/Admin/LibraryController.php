@@ -58,8 +58,29 @@ class LibraryController extends Controller
 
     public function store(Request $request)
     {
-        // Store logic
-        return redirect()->route('admin.libraries.index');
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'phone' => 'required|string|max:20',
+            'website' => 'nullable|url|max:255',
+            'contact_person' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'logo' => 'nullable|image|max:2048',
+            'is_active' => 'boolean',
+        ]);
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('logos', 'public');
+            $validated['logo'] = $logoPath;
+        }
+
+        $validated['is_active'] = $request->has('is_active');
+
+        Library::create($validated);
+
+        return redirect()->route('admin.libraries.index')
+            ->with('success', 'Library created successfully.');
     }
 
     public function show(Library $library)
