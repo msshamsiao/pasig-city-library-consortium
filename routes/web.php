@@ -137,6 +137,7 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
     Route::get('/members/{member}/edit', [\App\Http\Controllers\Librarian\MemberController::class, 'edit'])->name('members.edit');
     Route::put('/members/{member}', [\App\Http\Controllers\Librarian\MemberController::class, 'update'])->name('members.update');
     Route::post('/members/upload', [\App\Http\Controllers\Librarian\MemberController::class, 'upload'])->name('members.upload');
+    Route::post('/members/bulk-delete', [\App\Http\Controllers\Librarian\MemberController::class, 'bulkDelete'])->name('members.bulk-delete');
     
     // Books Management (Upload Only)
     Route::get('/books', [\App\Http\Controllers\Librarian\BookController::class, 'index'])->name('books.index');

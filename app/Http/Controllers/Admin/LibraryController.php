@@ -8,6 +8,7 @@ use App\Models\Holding;
 use App\Models\User;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LibraryController extends Controller
 {
@@ -96,8 +97,45 @@ class LibraryController extends Controller
 
     public function update(Request $request, Library $library)
     {
-        // Update logic
-        return redirect()->route('admin.libraries.index');
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'phone' => 'required|string|max:20',
+            'website' => 'nullable|url|max:255',
+            'contact_person' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'logo' => 'nullable|image|max:2048',
+            'is_active' => 'boolean',
+        ]);
+
+        $oldValues = $library->getOriginal();
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($library->logo && Storage::disk('public')->exists($library->logo)) {
+                Storage::disk('public')->delete($library->logo);
+            }
+            $logoPath = $request->file('logo')->store('logos', 'public');
+            $validated['logo'] = $logoPath;
+        }
+
+        $validated['is_active'] = $request->has('is_active');
+
+        $library->update($validated);
+
+        // Log library update
+        AuditLog::log(
+            'update',
+            'Library',
+            "Updated library: {$library->name}",
+            $library->id,
+            $oldValues,
+            $validated
+        );
+
+        return redirect()->route('admin.libraries.index')
+            ->with('success', 'Library updated successfully!');
     }
 
     public function destroy(Library $library)

@@ -10,13 +10,22 @@ use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $libraryId = Auth::user()->library_id;
+        $search = $request->input('search');
         
         // If no library assigned, show all borrowers
         if (!$libraryId) {
             $members = User::where('role', 'borrower')
+                ->when($search, function($q) use ($search) {
+                    return $q->where(function($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%")
+                              ->orWhere('email', 'like', "%{$search}%")
+                              ->orWhere('member_id', 'like', "%{$search}%")
+                              ->orWhere('phone', 'like', "%{$search}%");
+                    });
+                })
                 ->latest()
                 ->paginate(20);
         } else {
@@ -33,6 +42,14 @@ class MemberController extends Controller
             $members = User::where('role', 'borrower')
                 ->when(!empty($memberIds), function($q) use ($memberIds) {
                     return $q->whereIn('member_id', $memberIds);
+                })
+                ->when($search, function($q) use ($search) {
+                    return $q->where(function($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%")
+                              ->orWhere('email', 'like', "%{$search}%")
+                              ->orWhere('member_id', 'like', "%{$search}%")
+                              ->orWhere('phone', 'like', "%{$search}%");
+                    });
                 })
                 ->latest()
                 ->paginate(20);
@@ -78,8 +95,17 @@ class MemberController extends Controller
     public function edit(User $member)
     {
         // Ensure the member belongs to the same library
-        if ($member->library_id !== Auth::user()->library_id) {
-            abort(403, 'Unauthorized action.');
+        $libraryId = Auth::user()->library_id;
+        $library = \App\Models\Library::find($libraryId);
+        $libraryAcronym = $library ? $library->acronym : null;
+        
+        // Check if member belongs to this library through the members table
+        $memberRecord = \App\Models\Member::where('member_id', $member->member_id)
+            ->where('library_branch', $libraryAcronym)
+            ->first();
+            
+        if (!$memberRecord) {
+            abort(403, 'Unauthorized action. This member does not belong to your library.');
         }
 
         return view('librarian.members.edit', compact('member'));
@@ -88,8 +114,17 @@ class MemberController extends Controller
     public function update(Request $request, User $member)
     {
         // Ensure the member belongs to the same library
-        if ($member->library_id !== Auth::user()->library_id) {
-            abort(403, 'Unauthorized action.');
+        $libraryId = Auth::user()->library_id;
+        $library = \App\Models\Library::find($libraryId);
+        $libraryAcronym = $library ? $library->acronym : null;
+        
+        // Check if member belongs to this library through the members table
+        $memberRecord = \App\Models\Member::where('member_id', $member->member_id)
+            ->where('library_branch', $libraryAcronym)
+            ->first();
+            
+        if (!$memberRecord) {
+            abort(403, 'Unauthorized action. This member does not belong to your library.');
         }
 
         $validated = $request->validate([
@@ -196,5 +231,69 @@ class MemberController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Error processing CSV file: ' . $e->getMessage());
         }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $memberIds = $request->input('member_ids', []);
+        
+        if (empty($memberIds)) {
+            return back()->with('error', 'No members selected for deletion.');
+        }
+
+        $libraryId = Auth::user()->library_id;
+        $library = \App\Models\Library::find($libraryId);
+        $libraryAcronym = $library ? $library->acronym : null;
+        
+        $deleted = 0;
+        $errors = [];
+        
+        foreach ($memberIds as $memberId) {
+            $member = User::find($memberId);
+            
+            if (!$member) {
+                $errors[] = "Member ID {$memberId} not found";
+                continue;
+            }
+            
+            // Check if member belongs to this library
+            $memberRecord = \App\Models\Member::where('member_id', $member->member_id)
+                ->where('library_branch', $libraryAcronym)
+                ->first();
+                
+            if (!$memberRecord) {
+                $errors[] = "Member {$member->name} does not belong to your library";
+                continue;
+            }
+            
+            try {
+                $memberName = $member->name;
+                $memberEmail = $member->email;
+                
+                $member->delete();
+                
+                // Log deletion
+                AuditLog::log(
+                    'delete',
+                    'User',
+                    "Deleted member: {$memberName} ({$memberEmail})",
+                    $memberId,
+                    ['name' => $memberName, 'email' => $memberEmail],
+                    null
+                );
+                
+                $deleted++;
+            } catch (\Exception $e) {
+                $errors[] = "Error deleting {$member->name}: " . $e->getMessage();
+            }
+        }
+        
+        $message = "Successfully deleted {$deleted} member(s).";
+        if (!empty($errors)) {
+            $message .= " " . count($errors) . " error(s) occurred.";
+        }
+        
+        return back()->with('success', $message)
+                    ->with('errors', $errors);
     }
 }

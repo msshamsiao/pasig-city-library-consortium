@@ -56,7 +56,7 @@ class LibrarySeeder extends Seeder
             ],
             [
                 'name' => 'Pasig City Hall Library',
-                'acronym' => 'PCHL',
+                'acronym' => 'PCHLib',
                 'address' => 'Pasig City Hall, Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://pasigcityhalllibrary.wordpress.com/',
