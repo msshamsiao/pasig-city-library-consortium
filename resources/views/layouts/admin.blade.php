@@ -390,7 +390,15 @@
             const listEl = document.getElementById('notificationList');
             
             try {
-                const response = await fetch('{{ route("admin.notifications.index") }}');
+                @php
+                    $notificationRoute = match(auth()->user()->role) {
+                        'super_admin' => 'admin.notifications.index',
+                        'member_librarian' => 'librarian.notifications.index',
+                        'borrower' => 'borrower.notifications.index',
+                        default => 'admin.notifications.index'
+                    };
+                @endphp
+                const response = await fetch('{{ route($notificationRoute) }}');
                 const data = await response.json();
                 
                 if (data.data && data.data.length > 0) {
@@ -417,7 +425,15 @@
         // Mark notification as read
         async function markAsRead(id, link) {
             try {
-                await fetch(`{{ url('/admin/notifications') }}/${id}/read`, {
+                @php
+                    $notificationPrefix = match(auth()->user()->role) {
+                        'super_admin' => 'admin',
+                        'member_librarian' => 'librarian',
+                        'borrower' => 'borrower',
+                        default => 'admin'
+                    };
+                @endphp
+                await fetch(`{{ url('/' . $notificationPrefix . '/notifications') }}/${id}/read`, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -440,7 +456,15 @@
         // Mark all as read
         async function markAllAsRead() {
             try {
-                await fetch('{{ route("admin.notifications.read-all") }}', {
+                @php
+                    $notificationReadAllRoute = match(auth()->user()->role) {
+                        'super_admin' => 'admin.notifications.read-all',
+                        'member_librarian' => 'librarian.notifications.read-all',
+                        'borrower' => 'borrower.notifications.read-all',
+                        default => 'admin.notifications.read-all'
+                    };
+                @endphp
+                await fetch('{{ route($notificationReadAllRoute) }}', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',

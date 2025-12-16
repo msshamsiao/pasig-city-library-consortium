@@ -211,6 +211,13 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
 */
 
 Route::prefix('borrower')->name('borrower.')->middleware(['auth', 'role:borrower'])->group(function () {
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    
     // Reservations
     Route::get('/reservations', [\App\Http\Controllers\Borrower\ReservationController::class, 'index'])->name('reservations.index');
     Route::post('/reservations', [\App\Http\Controllers\Borrower\ReservationController::class, 'store'])->name('reservations.store');
