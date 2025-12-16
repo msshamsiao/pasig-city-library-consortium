@@ -162,12 +162,28 @@
                         
                         <div class="flex items-center gap-4">
                             <!-- Notifications -->
-                            <button class="relative text-gray-500 hover:text-gray-700">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                                </svg>
-                                <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
-                            </button>
+                            <div class="relative">
+                                <button onclick="toggleNotifications()" class="relative text-gray-500 hover:text-gray-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                    </svg>
+                                    <span id="notificationBadge" class="hidden absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                                </button>
+                                
+                                <!-- Notification Dropdown -->
+                                <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                                    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                        <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                                        <button onclick="markAllAsRead()" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                                    </div>
+                                    <div id="notificationList" class="max-h-96 overflow-y-auto">
+                                        <div class="p-4 text-center text-gray-500 text-sm">
+                                            <div class="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
+                                            <p class="mt-2">Loading...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- Logout Button -->
                             <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -342,6 +358,122 @@
     </aside>
 
     <script>
+        // Notification dropdown toggle
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            const isHidden = dropdown.classList.contains('hidden');
+            
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                loadNotifications();
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+        
+        // Load notifications
+        async function loadNotifications() {
+            const listEl = document.getElementById('notificationList');
+            
+            try {
+                const response = await fetch('{{ route("admin.notifications.index") }}');
+                const data = await response.json();
+                
+                if (data.data && data.data.length > 0) {
+                    listEl.innerHTML = data.data.map(notif => `
+                        <div class="p-4 border-b border-gray-100 hover:bg-gray-50 ${!notif.is_read ? 'bg-blue-50' : ''}" onclick="markAsRead(${notif.id}, '${notif.link || '#'}')">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">${notif.title}</p>
+                                    <p class="text-xs text-gray-600 mt-1">${notif.message}</p>
+                                    <p class="text-xs text-gray-400 mt-1">${new Date(notif.created_at).toLocaleString()}</p>
+                                </div>
+                                ${!notif.is_read ? '<span class="ml-2 block h-2 w-2 rounded-full bg-blue-500 flex-shrink-0"></span>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    listEl.innerHTML = '<div class="p-4 text-center text-gray-500 text-sm">No notifications</div>';
+                }
+            } catch (error) {
+                listEl.innerHTML = '<div class="p-4 text-center text-red-500 text-sm">Failed to load notifications</div>';
+            }
+        }
+        
+        // Mark notification as read
+        async function markAsRead(id, link) {
+            try {
+                await fetch(`{{ url('/admin/notifications') }}/${id}/read`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                updateUnreadCount();
+                
+                if (link && link !== '#') {
+                    window.location.href = link;
+                } else {
+                    loadNotifications();
+                }
+            } catch (error) {
+                console.error('Failed to mark as read:', error);
+            }
+        }
+        
+        // Mark all as read
+        async function markAllAsRead() {
+            try {
+                await fetch('{{ route("admin.notifications.read-all") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                loadNotifications();
+                updateUnreadCount();
+            } catch (error) {
+                console.error('Failed to mark all as read:', error);
+            }
+        }
+        
+        // Update unread count
+        async function updateUnreadCount() {
+            try {
+                const response = await fetch('{{ route("admin.notifications.unread-count") }}');
+                const data = await response.json();
+                const badge = document.getElementById('notificationBadge');
+                
+                if (data.count > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Failed to update unread count:', error);
+            }
+        }
+        
+        // Initial load
+        updateUnreadCount();
+        
+        // Refresh every 30 seconds
+        setInterval(updateUnreadCount, 30000);
+        
+        // Close notification dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const button = event.target.closest('button[onclick="toggleNotifications()"]');
+            
+            if (!button && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+        
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileSidebar = document.getElementById('mobile-sidebar');

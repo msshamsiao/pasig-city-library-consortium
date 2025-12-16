@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Librarian;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\AuditLog;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,10 +77,18 @@ class ActivityController extends Controller
         AuditLog::log(
             'create',
             'Activity',
-            "Created activity: {$activity->title} (Date: {$activity->activity_date})",
+            \"Created activity: {$activity->title} (Date: {$activity->activity_date})\",
             $activity->id,
             null,
             ['title' => $activity->title, 'activity_date' => $activity->activity_date, 'status' => 'pending']
+        );
+
+        // Notify all super admins about new activity submission
+        NotificationService::notifyAdmins(
+            'activity_submission',
+            'New Activity Submitted',
+            \"New activity '{$activity->title}' has been submitted for approval.\",
+            route('admin.activities.index')
         );
 
         return redirect()->route('librarian.activities.index')

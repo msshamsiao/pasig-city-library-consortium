@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\AuditLog;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller
@@ -42,15 +43,35 @@ class ActivityController extends Controller
             'rejection_reason' => null,
         ]);
 
+        // Notify the librarian who created the activity
+        NotificationService::notifyLibraryLibrarian(
+            $activity->library_id,
+            'activity_approved',
+            'Activity Approved',
+            "Your activity '{$activity->title}' has been approved and is now live!",
+            route('librarian.activities.index')
+        );
+
         return redirect()->back()->with('success', 'Activity approved successfully');
     }
 
     public function reject(Request $request, Activity $activity)
     {
+        $reason = $request->rejection_reason ?? 'No reason provided';
+        
         $activity->update([
             'approval_status' => 'rejected',
-            'rejection_reason' => $request->rejection_reason,
+            'rejection_reason' => $reason,
         ]);
+
+        // Notify the librarian who created the activity
+        NotificationService::notifyLibraryLibrarian(
+            $activity->library_id,
+            'activity_rejected',
+            'Activity Rejected',
+            "Your activity '{$activity->title}' was rejected. Reason: {$reason}",
+            route('librarian.activities.index')
+        );
 
         return redirect()->back()->with('success', 'Activity rejected');
     }

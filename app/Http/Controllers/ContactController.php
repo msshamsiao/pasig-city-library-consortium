@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
@@ -58,7 +59,7 @@ class ContactController extends Controller
         $validated = $validator->validated();
 
         // Save message to database
-        ContactMessage::create([
+        $contactMessage = ContactMessage::create([
             'department' => $validated['department'],
             'subject' => $validated['subject'],
             'from_email' => $validated['from'],
@@ -66,6 +67,14 @@ class ContactController extends Controller
             'message' => $validated['message'],
             'status' => 'unread',
         ]);
+
+        // Notify all admins about new contact message
+        NotificationService::notifyAdmins(
+            'contact_message',
+            'New Contact Message',
+            "New message from {$validated['from']} - Subject: {$validated['subject']}",
+            route('admin.messages.index')
+        );
 
         // TODO: Send email notification
         // Mail::to($this->getDepartmentEmail($validated['department']))

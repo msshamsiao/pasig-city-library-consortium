@@ -58,6 +58,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Relationship: User has many notifications
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->latest();
+    }
+
+    /**
+     * Get unread notifications count
+     */
+    public function unreadNotificationsCount(): int
+    {
+        return $this->notifications()->unread()->count();
+    }
+
+    /**
      * Check if user is Super Admin
      */
     public function isSuperAdmin(): bool

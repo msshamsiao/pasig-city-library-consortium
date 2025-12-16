@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Borrowing;
 use App\Models\Holding;
 use App\Models\AuditLog;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,6 +54,17 @@ class ReservationController extends Controller
             ['status' => 'reserved']
         );
 
+        // Notify the member
+        if ($borrowing->member && $borrowing->member->user) {
+            NotificationService::create(
+                $borrowing->member->user,
+                'reservation_approved',
+                'Reservation Approved',
+                "Your reservation for '{$borrowing->holding->title}' has been approved. Please pick it up soon.",
+                route('borrower.reservations.index')
+            );
+        }
+
         return back()->with('success', 'Reservation approved successfully!');
     }
 
@@ -81,6 +93,17 @@ class ReservationController extends Controller
             ['status' => 'pending'],
             ['status' => 'rejected', 'reason' => $reason]
         );
+
+        // Notify the member
+        if ($borrowing->member && $borrowing->member->user) {
+            NotificationService::create(
+                $borrowing->member->user,
+                'reservation_rejected',
+                'Reservation Rejected',
+                "Your reservation for '{$borrowing->holding->title}' was rejected. Reason: {$reason}",
+                route('borrower.reservations.index')
+            );
+        }
 
         return back()->with('success', 'Reservation rejected.');
     }
@@ -116,6 +139,18 @@ class ReservationController extends Controller
             ['status' => 'borrowed', 'borrowed_date' => now()->toDateTimeString()]
         );
 
+        // Notify the member
+        if ($borrowing->member && $borrowing->member->user) {
+            $dueDate = now()->addDays(14)->format('M d, Y');
+            NotificationService::create(
+                $borrowing->member->user,
+                'book_borrowed',
+                'Book Borrowed',
+                "You have successfully borrowed '{$borrowing->holding->title}'. Please return by {$dueDate}.",
+                route('borrower.reservations.index')
+            );
+        }
+
         return back()->with('success', 'Book marked as borrowed successfully!');
     }
 
@@ -149,6 +184,17 @@ class ReservationController extends Controller
             ['status' => 'borrowed'],
             ['status' => 'returned', 'return_date' => now()->toDateTimeString()]
         );
+
+        // Notify the member
+        if ($borrowing->member && $borrowing->member->user) {
+            NotificationService::create(
+                $borrowing->member->user,
+                'book_returned',
+                'Book Returned',
+                "Thank you for returning '{$borrowing->holding->title}'. We hope you enjoyed it!",
+                route('borrower.reservations.index')
+            );
+        }
 
         return back()->with('success', 'Book marked as returned successfully!');
     }

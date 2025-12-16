@@ -16,12 +16,36 @@ use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Services\NotificationService;
 
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES (NO LOGIN REQUIRED)
 |--------------------------------------------------------------------------
 */
+
+// Test notification routes (remove in production)
+Route::get('/test-notifications', function () {
+    return view('test-notification');
+})->name('test.notifications.page');
+
+Route::get('/test-notification', function () {
+    if (!auth()->check()) {
+        return redirect()->route('login')->with('error', 'Please login first to test notifications');
+    }
+    
+    $user = auth()->user();
+    
+    NotificationService::create(
+        $user,
+        'test',
+        'Test Notification',
+        'This is a test notification created at ' . now()->format('h:i A'),
+        '#'
+    );
+    
+    return back()->with('success', 'Test notification created! Check the bell icon.');
+})->name('test.notification');
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -66,6 +90,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
     
     // Analytics
     Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
@@ -129,6 +160,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
 Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member_librarian'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [\App\Http\Controllers\Librarian\LibrarianDashboardController::class, 'index'])->name('dashboard');
+    
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
     
     // Members Management (Upload Only)
     Route::get('/members', [\App\Http\Controllers\Librarian\MemberController::class, 'index'])->name('members.index');

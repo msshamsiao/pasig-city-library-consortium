@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Librarian;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\AuditLog;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -199,6 +200,16 @@ class MemberController extends Controller
             $message = "Successfully imported {$imported} member(s).";
             if (!empty($errors)) {
                 $message .= " " . count($errors) . " row(s) had errors.";
+            }
+            
+            // Notify admins about bulk member import
+            if ($imported > 0) {
+                NotificationService::notifyAdmins(
+                    'member_import',
+                    'Members Imported',
+                    Auth::user()->name . " imported {$imported} new member(s) to their library.",
+                    route('admin.members.index')
+                );
             }
             
             return back()->with('success', $message)
