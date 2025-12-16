@@ -101,7 +101,7 @@
                             Current Logo
                         </label>
                         <div class="flex items-center gap-4">
-                            <img src="{{ asset('storage/' . $library->logo) }}" alt="{{ $library->name }}" class="h-20 w-20 object-contain rounded-lg border border-gray-200">
+                            <img src="{{ asset($library->logo) }}" alt="{{ $library->name }}" class="h-20 w-20 object-contain rounded-lg border border-gray-200">
                             <p class="text-sm text-gray-600">Current library logo</p>
                         </div>
                     </div>
