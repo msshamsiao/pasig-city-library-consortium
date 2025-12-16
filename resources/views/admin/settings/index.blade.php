@@ -7,8 +7,8 @@
     <!-- Header -->
     <div class="flex justify-between items-center">
         <div>
-            <h2 class="text-2xl font-bold text-gray-900">System Settings</h2>
-            <p class="text-gray-600 mt-1">Manage system configuration and preferences</p>
+            <h2 class="text-2xl font-bold text-gray-900">Settings</h2>
+            <p class="text-gray-600 mt-1">Manage system configuration and administrator accounts</p>
         </div>
     </div>
 
@@ -24,7 +24,33 @@
     </div>
     @endif
 
-    <!-- General Settings -->
+    <!-- Tabs -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="border-b border-gray-200">
+            <nav class="flex -mb-px">
+                <button onclick="switchTab('system')" id="tab-system" class="tab-button active px-6 py-4 text-sm font-medium border-b-2 border-blue-600 text-blue-600">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        System Settings
+                    </div>
+                </button>
+                <button onclick="switchTab('admins')" id="tab-admins" class="tab-button px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        Administrators
+                    </div>
+                </button>
+            </nav>
+        </div>
+
+        <!-- System Settings Tab Content -->
+        <div id="content-system" class="tab-content p-6">
+            <!-- General Settings -->
     <div class="bg-white rounded-lg shadow-sm">
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900">General Settings</h3>
@@ -106,18 +132,6 @@
                     </select>
                 </div>
 
-                <!-- Items Per Page -->
-                <div>
-                    <label for="items_per_page" class="block text-sm font-medium text-gray-700 mb-2">Items Per Page</label>
-                    <select id="items_per_page" name="items_per_page" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="10">10</option>
-                        <option value="20" selected>20</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                </div>
-
                 <!-- Save Button -->
                 <div class="flex justify-end gap-3 pt-6 border-t">
                     <button type="button" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
@@ -130,10 +144,12 @@
             </form>
         </div>
     </div>
+        </div>
 
-    <!-- Super Admins Management -->
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <div class="flex justify-between items-center mb-4">
+        <!-- Administrators Tab Content -->
+        <div id="content-admins" class="tab-content hidden p-6">
+        <!-- Super Admins Management -->
+        <div class="flex justify-between items-center mb-6">
             <div>
                 <h3 class="text-lg font-semibold text-gray-900">Super Administrators</h3>
                 <p class="text-sm text-gray-600 mt-1">Manage system administrators</p>
@@ -146,7 +162,7 @@
             </button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -202,82 +218,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <!-- Member Librarians Management -->
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <div class="flex justify-between items-center mb-4">
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900">Member Librarian Accounts</h3>
-                <p class="text-sm text-gray-600 mt-1">Manage library administrator accounts</p>
-            </div>
-            <button onclick="openAddLibrarianModal()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Add Member Librarian
-            </button>
-        </div>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Library Branch</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($librarians as $librarian)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ $librarian->name }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-600">{{ $librarian->email }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">
-                                @if($librarian->library)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        {{ $librarian->library->acronym }}
-                                    </span>
-                                    <span class="text-gray-600 ml-1">- {{ $librarian->library->name }}</span>
-                                @else
-                                    <span class="text-gray-400">No library assigned</span>
-                                @endif
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {{ $librarian->created_at->format('M d, Y') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onclick="openEditLibrarianModal({{ $librarian->id }}, '{{ $librarian->name }}', '{{ $librarian->email }}', {{ $librarian->library_id ?? 'null' }})" 
-                                    class="text-blue-600 hover:text-blue-900 mr-3">
-                                Edit
-                            </button>
-                            <form action="{{ route('admin.settings.librarians.destroy', $librarian->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" onclick="return confirm('Are you sure you want to delete this librarian account?')" 
-                                        class="text-red-600 hover:text-red-900">
-                                    Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                            No member librarians found. Click "Add Member Librarian" to create one.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
@@ -395,122 +335,29 @@
     </div>
 </div>
 
-<!-- Add Member Librarian Modal -->
-<div id="addLibrarianModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Add Member Librarian</h3>
-            <button onclick="closeAddLibrarianModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-        <form action="{{ route('admin.settings.librarians.store') }}" method="POST" class="space-y-4">
-            @csrf
-            <div>
-                <label for="add_librarian_name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" id="add_librarian_name" name="name" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div>
-                <label for="add_librarian_email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="add_librarian_email" name="email" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div>
-                <label for="add_librarian_library" class="block text-sm font-medium text-gray-700 mb-1">Library Branch</label>
-                <select id="add_librarian_library" name="library_id" required 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="">Select a library</option>
-                    @foreach($libraries as $library)
-                        <option value="{{ $library->id }}">{{ $library->acronym }} - {{ $library->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
-                <label for="add_librarian_password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="add_librarian_password" name="password" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div>
-                <label for="add_librarian_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                <input type="password" id="add_librarian_password_confirmation" name="password_confirmation" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div class="flex justify-end gap-2 pt-4">
-                <button type="button" onclick="closeAddLibrarianModal()" 
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    Cancel
-                </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                    Create Librarian
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Edit Member Librarian Modal -->
-<div id="editLibrarianModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Edit Member Librarian</h3>
-            <button onclick="closeEditLibrarianModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-        <form id="editLibrarianForm" method="POST" class="space-y-4">
-            @csrf
-            @method('PUT')
-            <div>
-                <label for="edit_librarian_name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" id="edit_librarian_name" name="name" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div>
-                <label for="edit_librarian_email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="edit_librarian_email" name="email" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div>
-                <label for="edit_librarian_library" class="block text-sm font-medium text-gray-700 mb-1">Library Branch</label>
-                <select id="edit_librarian_library" name="library_id" required 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="">Select a library</option>
-                    @foreach($libraries as $library)
-                        <option value="{{ $library->id }}">{{ $library->acronym }} - {{ $library->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
-                <label for="edit_librarian_password" class="block text-sm font-medium text-gray-700 mb-1">New Password (leave blank to keep current)</label>
-                <input type="password" id="edit_librarian_password" name="password" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div>
-                <label for="edit_librarian_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                <input type="password" id="edit_librarian_password_confirmation" name="password_confirmation" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-            <div class="flex justify-end gap-2 pt-4">
-                <button type="button" onclick="closeEditLibrarianModal()" 
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    Cancel
-                </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                    Update Librarian
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
+// Tab switching functionality
+function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active', 'border-blue-600', 'text-blue-600');
+        button.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Show selected tab content
+    document.getElementById('content-' + tabName).classList.remove('hidden');
+    
+    // Add active class to selected tab
+    const activeTab = document.getElementById('tab-' + tabName);
+    activeTab.classList.add('active', 'border-blue-600', 'text-blue-600');
+    activeTab.classList.remove('border-transparent', 'text-gray-500');
+}
+
 function openAddAdminModal() {
     document.getElementById('addAdminModal').classList.remove('hidden');
 }
@@ -532,46 +379,16 @@ function closeEditAdminModal() {
     document.getElementById('editAdminModal').classList.add('hidden');
 }
 
-function openAddLibrarianModal() {
-    document.getElementById('addLibrarianModal').classList.remove('hidden');
-}
-
-function closeAddLibrarianModal() {
-    document.getElementById('addLibrarianModal').classList.add('hidden');
-}
-
-function openEditLibrarianModal(id, name, email, libraryId) {
-    document.getElementById('editLibrarianForm').action = `/admin/settings/librarians/${id}`;
-    document.getElementById('edit_librarian_name').value = name;
-    document.getElementById('edit_librarian_email').value = email;
-    document.getElementById('edit_librarian_library').value = libraryId || '';
-    document.getElementById('edit_librarian_password').value = '';
-    document.getElementById('edit_librarian_password_confirmation').value = '';
-    document.getElementById('editLibrarianModal').classList.remove('hidden');
-}
-
-function closeEditLibrarianModal() {
-    document.getElementById('editLibrarianModal').classList.add('hidden');
-}
-
 // Close modals when clicking outside
 window.onclick = function(event) {
     const addModal = document.getElementById('addAdminModal');
     const editModal = document.getElementById('editAdminModal');
-    const addLibrarianModal = document.getElementById('addLibrarianModal');
-    const editLibrarianModal = document.getElementById('editLibrarianModal');
     
     if (event.target === addModal) {
         closeAddAdminModal();
     }
     if (event.target === editModal) {
         closeEditAdminModal();
-    }
-    if (event.target === addLibrarianModal) {
-        closeAddLibrarianModal();
-    }
-    if (event.target === editLibrarianModal) {
-        closeEditLibrarianModal();
     }
 }
 </script>

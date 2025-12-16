@@ -171,26 +171,7 @@
             </table>
 
             <!-- Pagination -->
-            @if($members->hasPages())
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-700">
-                        Showing <span class="font-medium">{{ $members->firstItem() ?? 0 }}</span> 
-                        to <span class="font-medium">{{ $members->lastItem() ?? 0 }}</span> 
-                        of <span class="font-medium">{{ $members->total() }}</span> results
-                    </div>
-                    <div>
-                        {{ $members->links() }}
-                    </div>
-                </div>
-            </div>
-            @else
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="text-sm text-gray-700">
-                    Total: <span class="font-medium">{{ $members->total() }}</span> members
-                </div>
-            </div>
-            @endif
+            <x-pagination :items="$members" />
         </div>
     </div>
 </div>

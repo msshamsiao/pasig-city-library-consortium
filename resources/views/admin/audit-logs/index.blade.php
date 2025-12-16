@@ -72,41 +72,37 @@
         </div>
 
         <!-- Audit Logs Table -->
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+        <div class="bg-white rounded-lg shadow-sm">
+                <table class="w-full table-fixed divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date/Time</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Library</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="w-[12%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date/Time</th>
+                            <th class="w-[15%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                            <th class="w-[10%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                            <th class="w-[10%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                            <th class="w-[30%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                            <th class="w-[10%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Library</th>
+                            <th class="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($logs as $log)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-2 py-3 text-xs text-gray-900">
                                     {{ $log->created_at->format('M d, Y') }}<br>
                                     <span class="text-gray-500">{{ $log->created_at->format('h:i A') }}</span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">{{ $log->user_name ?? 'System' }}</div>
-                                    <div class="text-sm text-gray-500">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
-                                            @if($log->user_role === 'super_admin') bg-purple-100 text-purple-800
-                                            @elseif($log->user_role === 'member_librarian') bg-blue-100 text-blue-800
-                                            @else bg-green-100 text-green-800
-                                            @endif">
-                                            {{ str_replace('_', ' ', ucfirst($log->user_role ?? 'system')) }}
-                                        </span>
-                                    </div>
+                                <td class="px-2 py-3">
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium 
+                                        @if($log->user_role === 'super_admin') bg-purple-100 text-purple-800
+                                        @elseif($log->user_role === 'member_librarian') bg-blue-100 text-blue-800
+                                        @else bg-green-100 text-green-800
+                                        @endif">
+                                        {{ $log->user_name ?? 'System' }}
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                <td class="px-2 py-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                         @if($log->action === 'create') bg-green-100 text-green-800
                                         @elseif($log->action === 'update') bg-blue-100 text-blue-800
                                         @elseif($log->action === 'delete') bg-red-100 text-red-800
@@ -118,16 +114,16 @@
                                         {{ ucfirst($log->action) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-2 py-3 text-xs text-gray-900 truncate">
                                     {{ $log->model }}
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-900 max-w-md">
-                                    {{ Str::limit($log->description, 80) }}
+                                <td class="px-2 py-3 text-xs text-gray-900 truncate" title="{{ $log->description }}">
+                                    {{ Str::limit($log->description, 60) }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $log->library?->name ?? 'N/A' }}
+                                <td class="px-2 py-3 text-xs font-semibold text-gray-900">
+                                    {{ $log->library?->acronym ?? 'N/A' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td class="px-2 py-3 text-xs font-medium">
                                     <a href="{{ route('admin.audit-logs.show', $log) }}" class="text-blue-600 hover:text-blue-900" title="View Details">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -138,7 +134,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
@@ -148,14 +144,9 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
 
             <!-- Pagination -->
-            @if($logs->hasPages())
-                <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                    {{ $logs->links() }}
-                </div>
-            @endif
+            <x-pagination :items="$logs" />
         </div>
     </div>
 </div>

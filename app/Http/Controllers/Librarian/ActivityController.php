@@ -26,7 +26,8 @@ class ActivityController extends Controller
             });
         }
         
-        $activities = $query->latest()->paginate(20)->appends(['search' => $request->search]);
+        $perPage = $request->input('perPage', 10);
+        $activities = $query->latest()->paginate($perPage)->appends(['search' => $request->search]);
         
         // Calculate statistics
         $stats = [
@@ -77,7 +78,7 @@ class ActivityController extends Controller
         AuditLog::log(
             'create',
             'Activity',
-            \"Created activity: {$activity->title} (Date: {$activity->activity_date})\",
+            "Created activity: {$activity->title} (Date: {$activity->activity_date})",
             $activity->id,
             null,
             ['title' => $activity->title, 'activity_date' => $activity->activity_date, 'status' => 'pending']
@@ -87,7 +88,7 @@ class ActivityController extends Controller
         NotificationService::notifyAdmins(
             'activity_submission',
             'New Activity Submitted',
-            \"New activity '{$activity->title}' has been submitted for approval.\",
+            "New activity '{$activity->title}' has been submitted for approval.",
             route('admin.activities.index')
         );
 

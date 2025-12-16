@@ -11,20 +11,22 @@ use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = $request->input('perPage', 10);
+        
         // Get member record
         $member = \App\Models\Member::where('user_id', Auth::id())->first();
         
         if (!$member) {
-            $reservations = \App\Models\Borrowing::whereNull('id')->paginate(10);
+            $reservations = \App\Models\Borrowing::whereNull('id')->paginate($perPage);
         } else {
             // Get borrowings with pending, reserved, or borrowed status
             $reservations = \App\Models\Borrowing::with('holding')
                 ->where('member_id', $member->id)
                 ->whereIn('status', ['pending', 'reserved', 'borrowed'])
                 ->latest()
-                ->paginate(10);
+                ->paginate($perPage);
         }
         
         return view('borrower.reservations.index', compact('reservations'));

@@ -129,26 +129,7 @@
             </div>
             
             <!-- Pagination -->
-            @if($libraries->hasPages())
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-700">
-                        Showing <span class="font-medium">{{ $libraries->firstItem() ?? 0 }}</span> 
-                        to <span class="font-medium">{{ $libraries->lastItem() ?? 0 }}</span> 
-                        of <span class="font-medium">{{ $libraries->total() }}</span> results
-                    </div>
-                    <div>
-                        {{ $libraries->links() }}
-                    </div>
-                </div>
-            </div>
-            @else
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="text-sm text-gray-700">
-                    Total: <span class="font-medium">{{ $libraries->total() }}</span> libraries
-                </div>
-            </div>
-            @endif
+            <x-pagination :items="$libraries" />
         </div>
 
     </div>

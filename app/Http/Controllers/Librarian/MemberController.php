@@ -29,7 +29,7 @@ class MemberController extends Controller
                 });
             })
             ->latest()
-            ->paginate(20)
+            ->paginate($request->input('perPage', 10))
             ->appends(['search' => $search]);
         
         return view('librarian.members.index', compact('members'));
@@ -73,15 +73,8 @@ class MemberController extends Controller
     {
         // Ensure the member belongs to the same library
         $libraryId = Auth::user()->library_id;
-        $library = \App\Models\Library::find($libraryId);
-        $libraryAcronym = $library ? $library->acronym : null;
         
-        // Check if member belongs to this library through the members table
-        $memberRecord = \App\Models\Member::where('member_id', $member->member_id)
-            ->where('library_branch', $libraryAcronym)
-            ->first();
-            
-        if (!$memberRecord) {
+        if ($member->library_id !== $libraryId) {
             abort(403, 'Unauthorized action. This member does not belong to your library.');
         }
 
@@ -92,15 +85,8 @@ class MemberController extends Controller
     {
         // Ensure the member belongs to the same library
         $libraryId = Auth::user()->library_id;
-        $library = \App\Models\Library::find($libraryId);
-        $libraryAcronym = $library ? $library->acronym : null;
         
-        // Check if member belongs to this library through the members table
-        $memberRecord = \App\Models\Member::where('member_id', $member->member_id)
-            ->where('library_branch', $libraryAcronym)
-            ->first();
-            
-        if (!$memberRecord) {
+        if ($member->library_id !== $libraryId) {
             abort(403, 'Unauthorized action. This member does not belong to your library.');
         }
 

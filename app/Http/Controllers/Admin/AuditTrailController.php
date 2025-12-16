@@ -15,10 +15,12 @@ class AuditTrailController extends Controller
         
         $query = DB::table('activity_log')
             ->join('users', 'activity_log.user_id', '=', 'users.id')
+            ->leftJoin('libraries', 'users.library_id', '=', 'libraries.id')
             ->select(
                 'activity_log.*',
                 'users.name as user_name',
-                'users.email as user_email'
+                'users.email as user_email',
+                'libraries.acronym as library_acronym'
             )
             ->orderBy('activity_log.created_at', 'desc');
 
@@ -40,7 +42,8 @@ class AuditTrailController extends Controller
             $query->where('activity_log.action', $request->action);
         }
 
-        $auditLogs = $query->paginate(20);
+        $perPage = $request->input('perPage', 10);
+        $auditLogs = $query->paginate($perPage);
 
         // Get filter options
         $users = DB::table('users')

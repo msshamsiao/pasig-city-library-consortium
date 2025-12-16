@@ -124,7 +124,7 @@
     </div>
 
     <div class="bg-white px-4 py-3 border-t border-gray-200">
-        {{ $reservations->links() }}
+        <x-pagination :items="$reservations" />
     </div>
 </div>
 

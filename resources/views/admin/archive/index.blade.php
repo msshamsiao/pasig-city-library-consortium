@@ -78,11 +78,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                @if($archivedLibraries->hasPages())
-                <div class="bg-white px-4 py-3 border-t border-gray-200">
-                    {{ $archivedLibraries->links() }}
-                </div>
-                @endif
+                <x-pagination :items="$archivedLibraries" />
             </div>
         </div>
 
@@ -140,11 +136,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                @if($archivedBooks->hasPages())
-                <div class="bg-white px-4 py-3 border-t border-gray-200">
-                    {{ $archivedBooks->links() }}
-                </div>
-                @endif
+                <x-pagination :items="$archivedBooks" />
             </div>
         </div>
 
@@ -205,11 +197,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                @if($archivedActivities->hasPages())
-                <div class="bg-white px-4 py-3 border-t border-gray-200">
-                    {{ $archivedActivities->links() }}
-                </div>
-                @endif
+                <x-pagination :items="$archivedActivities" />
             </div>
         </div>
 
@@ -273,11 +261,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                @if($archivedUsers->hasPages())
-                <div class="bg-white px-4 py-3 border-t border-gray-200">
-                    {{ $archivedUsers->links() }}
-                </div>
-                @endif
+                <x-pagination :items="$archivedUsers" />
             </div>
         </div>
     </div>

@@ -20,7 +20,7 @@ class AuditLogController extends Controller
             ->when($request->filled('date_from'), fn($q) => $q->whereDate('created_at', '>=', $request->date_from))
             ->when($request->filled('date_to'), fn($q) => $q->whereDate('created_at', '<=', $request->date_to))
             ->latest()
-            ->paginate(50);
+            ->paginate($request->input('perPage', 10));
 
         // Get unique values for filters
         $users = User::select('id', 'name')->orderBy('name')->get();

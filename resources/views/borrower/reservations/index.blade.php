@@ -144,9 +144,7 @@
                 </table>
 
                 <!-- Pagination -->
-                <div class="bg-white px-4 py-3 border-t border-gray-200">
-                    {{ $reservations->links() }}
-                </div>
+                <x-pagination :items="$reservations" />
             @endif
         </div>
     </div>
@@ -154,7 +152,7 @@
 
 <!-- New Reservation Modal -->
 <div id="newReservationModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-3xl shadow-lg rounded-lg bg-white">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-medium text-gray-900">New Reservation Request</h3>
             <button onclick="document.getElementById('newReservationModal').classList.add('hidden')" 

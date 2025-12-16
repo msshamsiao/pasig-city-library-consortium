@@ -65,31 +65,36 @@
         </div>
 
         <!-- Audit Log Table -->
-        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
+        <div class="bg-white shadow-sm rounded-lg">
+            <table class="w-full table-fixed divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                        <th class="w-[12%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="w-[15%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                        <th class="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Library</th>
+                        <th class="w-[10%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                        <th class="w-[35%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                        <th class="w-[12%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
+                        <th class="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Details</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($auditLogs as $log)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y') }}</div>
+                        <td class="px-2 py-3">
+                            <div class="text-xs text-gray-900">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y') }}</div>
                             <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($log->created_at)->format('h:i A') }}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ $log->user_name }}</div>
-                            <div class="text-xs text-gray-500">{{ $log->user_email }}</div>
+                        <td class="px-2 py-3">
+                            <span class="text-xs font-medium text-gray-900 truncate" title="{{ $log->user_name }}">{{ $log->user_name }}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        <td class="px-2 py-3">
+                            <span class="text-xs font-semibold text-gray-900">
+                                {{ $log->library_acronym ?? 'N/A' }}
+                            </span>
+                        </td>
+                        <td class="px-2 py-3">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
                                 @if($log->action === 'created') bg-green-100 text-green-800
                                 @elseif($log->action === 'updated') bg-blue-100 text-blue-800
                                 @elseif($log->action === 'deleted') bg-red-100 text-red-800
@@ -100,8 +105,8 @@
                                 {{ ucfirst($log->action) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm text-gray-900">
+                        <td class="px-2 py-3">
+                            <div class="text-xs text-gray-900 truncate" title="@if($log->description){{ $log->description }}@elseif($log->model){{ ucfirst($log->action) }} {{ $log->model }} @if($log->model_id)#{{ $log->model_id }}@endif @else{{ ucfirst($log->action) }} action@endif">
                                 @if($log->description)
                                     {{ $log->description }}
                                 @elseif($log->model)
@@ -114,18 +119,18 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $log->ip_address ?? 'N/A' }}</div>
+                        <td class="px-2 py-3">
+                            <div class="text-xs text-gray-900 truncate">{{ $log->ip_address ?? 'N/A' }}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <td class="px-2 py-3 text-xs">
                             <button onclick="showDetails({{ $log->id }})" class="text-blue-600 hover:text-blue-900">
-                                View Details
+                                View
                             </button>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
                             No audit logs found. Activity logs will appear here when users perform actions in the system.
                         </td>
                     </tr>
@@ -134,26 +139,7 @@
             </table>
 
             <!-- Pagination -->
-            @if($auditLogs->hasPages())
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-700">
-                        Showing <span class="font-medium">{{ $auditLogs->firstItem() ?? 0 }}</span> 
-                        to <span class="font-medium">{{ $auditLogs->lastItem() ?? 0 }}</span> 
-                        of <span class="font-medium">{{ $auditLogs->total() }}</span> results
-                    </div>
-                    <div>
-                        {{ $auditLogs->links() }}
-                    </div>
-                </div>
-            </div>
-            @else
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="text-sm text-gray-700">
-                    Total: <span class="font-medium">{{ $auditLogs->total() }}</span> results
-                </div>
-            </div>
-            @endif
+            <x-pagination :items="$auditLogs" />
         </div>
     </div>
 </div>

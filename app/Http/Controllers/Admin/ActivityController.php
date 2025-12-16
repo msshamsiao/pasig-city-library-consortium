@@ -20,7 +20,8 @@ class ActivityController extends Controller
             $query->where('library_id', $request->library);
         }
         
-        $activities = $query->orderBy('activity_date', 'desc')->paginate(20);
+        $perPage = $request->input('perPage', 10);
+        $activities = $query->orderBy('activity_date', 'desc')->paginate($perPage);
 
         // Calculate statistics
         $totalActivities = Activity::count();

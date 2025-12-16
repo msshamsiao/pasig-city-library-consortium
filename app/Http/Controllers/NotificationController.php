@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
@@ -12,9 +13,9 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = auth()->user()
-            ->notifications()
-            ->paginate(10);
+        $notifications = Notification::where('user_id', Auth::id())
+            ->latest()
+            ->paginate(request()->input('perPage', 10));
 
         return response()->json($notifications);
     }
@@ -24,7 +25,9 @@ class NotificationController extends Controller
      */
     public function unreadCount()
     {
-        $count = auth()->user()->unreadNotificationsCount();
+        $count = Notification::where('user_id', Auth::id())
+            ->where('is_read', false)
+            ->count();
         
         return response()->json(['count' => $count]);
     }
@@ -34,7 +37,7 @@ class NotificationController extends Controller
      */
     public function markAsRead($id)
     {
-        $notification = Notification::where('user_id', auth()->id())
+        $notification = Notification::where('user_id', Auth::id())
             ->findOrFail($id);
 
         $notification->markAsRead();
@@ -47,9 +50,8 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        auth()->user()
-            ->notifications()
-            ->unread()
+        Notification::where('user_id', Auth::id())
+            ->where('is_read', false)
             ->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
@@ -60,7 +62,7 @@ class NotificationController extends Controller
      */
     public function destroy($id)
     {
-        $notification = Notification::where('user_id', auth()->id())
+        $notification = Notification::where('user_id', Auth::id())
             ->findOrFail($id);
 
         $notification->delete();

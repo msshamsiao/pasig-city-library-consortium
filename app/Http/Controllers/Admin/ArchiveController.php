@@ -11,25 +11,27 @@ use Illuminate\Http\Request;
 
 class ArchiveController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = $request->input('perPage', 10);
+        
         // Get archived/inactive records from different models
         $archivedLibraries = Library::where('is_active', false)
             ->orderBy('updated_at', 'desc')
-            ->paginate(10);
+            ->paginate($perPage);
 
         $archivedBooks = Holding::onlyTrashed()
             ->orderBy('deleted_at', 'desc')
-            ->paginate(10);
+            ->paginate($perPage);
 
         $archivedActivities = Activity::onlyTrashed()
             ->with('library')
             ->orderBy('deleted_at', 'desc')
-            ->paginate(10);
+            ->paginate($perPage);
 
         $archivedUsers = User::onlyTrashed()
             ->orderBy('deleted_at', 'desc')
-            ->paginate(10);
+            ->paginate($perPage);
 
         return view('admin.archive.index', compact(
             'archivedLibraries',

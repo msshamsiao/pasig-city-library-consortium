@@ -33,7 +33,8 @@ class BookController extends Controller
             });
         }
         
-        $books = $query->latest()->paginate(20)->appends(['search' => $search]);
+        $perPage = $request->input('perPage', 10);
+        $books = $query->latest()->paginate($perPage)->appends(['search' => $search]);
         
         return view('librarian.books.index', compact('books'));
     }

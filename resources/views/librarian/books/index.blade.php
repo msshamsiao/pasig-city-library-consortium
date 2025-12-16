@@ -175,26 +175,7 @@
             </table>
 
             <!-- Pagination -->
-            @if($books->hasPages())
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-700">
-                        Showing <span class="font-medium">{{ $books->firstItem() ?? 0 }}</span> 
-                        to <span class="font-medium">{{ $books->lastItem() ?? 0 }}</span> 
-                        of <span class="font-medium">{{ $books->total() }}</span> results
-                    </div>
-                    <div>
-                        {{ $books->links() }}
-                    </div>
-                </div>
-            </div>
-            @else
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="text-sm text-gray-700">
-                    Total: <span class="font-medium">{{ $books->total() }}</span> books
-                </div>
-            </div>
-            @endif
+            <x-pagination :items="$books" />
         </div>
     </div>
 </div>

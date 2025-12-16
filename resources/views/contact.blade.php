@@ -11,6 +11,38 @@
             <p class="text-gray-600">Send an email inquiry to Pasig City Library Consortium</p>
         </div>
 
+        <!-- Success Message -->
+        @if(session('success'))
+        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-lg flex items-start">
+            <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span>{{ session('success') }}</span>
+        </div>
+        @endif
+
+        <!-- Error Message -->
+        @if(session('error'))
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-lg flex items-start">
+            <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <span>{{ session('error') }}</span>
+        </div>
+        @endif
+
+        <!-- Validation Errors -->
+        @if($errors->any())
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-lg">
+            <p class="font-semibold mb-2">Please fix the following errors:</p>
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
         <!-- Contact Form -->
         <div class="bg-white border border-gray-200 rounded-lg p-8">
             <form action="{{ route('contact.submit') }}" method="POST" class="space-y-6">
@@ -23,15 +55,15 @@
                         <select 
                             id="department"
                             name="department"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none @error('department') border-red-500 @enderror"
                             required
                         >
-                            <option value="MIS">MIS</option>
-                            <option value="circulation">Circulation Department</option>
-                            <option value="reference">Reference Department</option>
-                            <option value="technical">Technical Services</option>
-                            <option value="admin">Administration</option>
-                            <option value="digital">Digital Resources</option>
+                            <option value="MIS" {{ old('department', 'MIS') == 'MIS' ? 'selected' : '' }}>MIS</option>
+                            <option value="circulation" {{ old('department') == 'circulation' ? 'selected' : '' }}>Circulation Department</option>
+                            <option value="reference" {{ old('department') == 'reference' ? 'selected' : '' }}>Reference Department</option>
+                            <option value="technical" {{ old('department') == 'technical' ? 'selected' : '' }}>Technical Services</option>
+                            <option value="admin" {{ old('department') == 'admin' ? 'selected' : '' }}>Administration</option>
+                            <option value="digital" {{ old('department') == 'digital' ? 'selected' : '' }}>Digital Resources</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-700">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,8 +97,8 @@
                             type="text" 
                             id="subject"
                             name="subject"
-                            value="PLCC"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value="{{ old('subject', 'PLCC') }}"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('subject') border-red-500 @enderror"
                             required
                         >
                     </div>
@@ -78,8 +110,9 @@
                             type="email" 
                             id="from"
                             name="from"
+                            value="{{ old('from') }}"
                             placeholder="Your email address"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('from') border-red-500 @enderror"
                             required
                         >
                     </div>
@@ -91,8 +124,9 @@
                             type="email" 
                             id="email"
                             name="email"
+                            value="{{ old('email') }}"
                             placeholder="Enter your email address"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('email') border-red-500 @enderror"
                             required
                         >
                     </div>
@@ -105,9 +139,9 @@
                             name="message"
                             rows="8"
                             placeholder="Type your question or comments here..."
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none @error('message') border-red-500 @enderror"
                             required
-                        ></textarea>
+                        >{{ old('message') }}</textarea>
                     </div>
 
                     <!-- Submit Button -->

@@ -14,8 +14,14 @@ class LibraryController extends Controller
 {
     public function index(Request $request)
     {
-        // Get only active libraries (not archived)
-        $libraries = Library::orderBy('name', 'asc')->get()->map(function($library) {
+        $perPage = $request->input('perPage', 10);
+        
+        // Get only active libraries (not archived) with pagination
+        $librariesQuery = Library::orderBy('name', 'asc');
+        $libraries = $librariesQuery->paginate($perPage);
+        
+        // Add statistics to each library
+        $libraries->getCollection()->transform(function($library) {
             // Count books in this specific library branch
             $totalBooks = Holding::where('holding_branch_id', $library->id)->count();
             

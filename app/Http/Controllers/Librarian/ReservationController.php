@@ -15,7 +15,7 @@ class ReservationController extends Controller
     /**
      * Display a listing of book reservations/requests
      */
-    public function index()
+    public function index(Request $request)
     {
         $libraryId = Auth::user()->library_id;
         
@@ -27,7 +27,7 @@ class ReservationController extends Controller
                 });
             })
             ->latest()
-            ->paginate(20);
+            ->paginate($request->input('perPage', 10));
 
         return view('librarian.reservations.index', compact('reservations'));
     }

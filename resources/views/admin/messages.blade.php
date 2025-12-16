@@ -32,7 +32,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Total Messages</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">156</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['total'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Unread</p>
-                    <p class="text-3xl font-bold text-orange-600 mt-1">23</p>
+                    <p class="text-3xl font-bold text-orange-600 mt-1">{{ $stats['unread'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,12 +59,12 @@
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Replied</p>
-                    <p class="text-3xl font-bold text-green-600 mt-1">98</p>
+                    <p class="text-sm text-gray-600">Read</p>
+                    <p class="text-3xl font-bold text-green-600 mt-1">{{ $stats['read'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
             </div>
@@ -73,8 +73,8 @@
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">This Month</p>
-                    <p class="text-3xl font-bold text-purple-600 mt-1">35</p>
+                    <p class="text-sm text-gray-600">Today</p>
+                    <p class="text-3xl font-bold text-purple-600 mt-1">{{ \App\Models\ContactMessage::whereDate('created_at', today())->count() }}</p>
                 </div>
                 <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,18 +304,7 @@
         </div>
 
         <!-- Pagination -->
-        <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 flex items-center justify-between">
-            <div class="text-sm text-gray-700">
-                Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">156</span> messages
-            </div>
-            <div class="flex gap-2">
-                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">Previous</button>
-                <button class="px-3 py-1 bg-blue-600 text-white rounded">1</button>
-                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">2</button>
-                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">3</button>
-                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">Next</button>
-            </div>
-        </div>
+        <x-pagination :items="$messages" />
     </div>
 </div>
 @endsection

@@ -214,26 +214,7 @@
             </div>
 
             <!-- Pagination -->
-            @if($activities->hasPages())
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-700">
-                        Showing <span class="font-medium">{{ $activities->firstItem() ?? 0 }}</span> 
-                        to <span class="font-medium">{{ $activities->lastItem() ?? 0 }}</span> 
-                        of <span class="font-medium">{{ $activities->total() }}</span> results
-                    </div>
-                    <div>
-                        {{ $activities->links() }}
-                    </div>
-                </div>
-            </div>
-            @else
-            <div class="bg-white px-4 py-3 border-t border-gray-200">
-                <div class="text-sm text-gray-700">
-                    Total: <span class="font-medium">{{ $activities->total() }}</span> activities
-                </div>
-            </div>
-            @endif
+            <x-pagination :items="$activities" />
         </div>
     </div>
 </div>

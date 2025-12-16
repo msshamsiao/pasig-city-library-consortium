@@ -30,11 +30,11 @@ Route::get('/test-notifications', function () {
 })->name('test.notifications.page');
 
 Route::get('/test-notification', function () {
-    if (!auth()->check()) {
+    if (!Auth::check()) {
         return redirect()->route('login')->with('error', 'Please login first to test notifications');
     }
     
-    $user = auth()->user();
+    $user = Auth::user();
     
     NotificationService::create(
         $user,
@@ -149,6 +149,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     Route::post('settings/super-admins', [\App\Http\Controllers\Admin\SettingsController::class, 'storeSuperAdmin'])->name('settings.super-admins.store');
     Route::put('settings/super-admins/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'updateSuperAdmin'])->name('settings.super-admins.update');
     Route::delete('settings/super-admins/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroySuperAdmin'])->name('settings.super-admins.destroy');
+    Route::post('settings/librarians', [\App\Http\Controllers\Admin\SettingsController::class, 'storeLibrarian'])->name('settings.librarians.store');
+    Route::put('settings/librarians/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'updateLibrarian'])->name('settings.librarians.update');
+    Route::delete('settings/librarians/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroyLibrarian'])->name('settings.librarians.destroy');
 });
 
 /*
