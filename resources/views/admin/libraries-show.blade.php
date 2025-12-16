@@ -156,7 +156,7 @@
                         <h3 class="text-lg font-semibold text-gray-900">Library Logo</h3>
                     </div>
                     <div class="p-6 flex justify-center">
-                        <img src="{{ asset('storage/' . $library->logo) }}" alt="{{ $library->name }}" class="max-h-48 object-contain rounded-lg">
+                        <img src="{{ asset($library->logo) }}" alt="{{ $library->name }}" class="max-h-48 object-contain rounded-lg">
                     </div>
                 </div>
                 @endif
