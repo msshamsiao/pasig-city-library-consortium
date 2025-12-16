@@ -126,9 +126,6 @@
                                     <div class="text-sm font-medium text-gray-900">{{ $member->name }}</div>
                                     <div class="text-xs text-gray-500">
                                         ID: {{ $member->member_id ?? $member->id }}
-                                        @if($member->library)
-                                            <span class="text-blue-600"> • {{ $member->library->name }}</span>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -199,24 +196,24 @@
 </div>
 
 <!-- Upload CSV Modal -->
-<div id="uploadModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+<div id="uploadModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="event.target === this && !document.getElementById('uploadMemberBtn').disabled && closeMemberUploadModal()">
     <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-medium text-gray-900">Upload Members CSV</h3>
-            <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-500">
+            <button onclick="if(!this.disabled) closeMemberUploadModal()" type="button" id="closeMemberModalBtn" class="text-gray-400 hover:text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
         
-        <form action="{{ route('librarian.members.upload') }}" method="POST" enctype="multipart/form-data">
+        <form id="uploadMemberForm" action="{{ route('librarian.members.upload') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     CSV File
                 </label>
-                <input type="file" name="file" accept=".csv" required
+                <input type="file" name="file" id="memberFileInput" accept=".csv" required
                     class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                 <p class="mt-2 text-xs text-gray-500">Upload a CSV file with columns: name, email, password, phone, address</p>
             </div>
@@ -240,12 +237,16 @@
             </div>
             
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="document.getElementById('uploadModal').classList.add('hidden')"
+                <button type="button" onclick="closeMemberUploadModal()" id="cancelMemberBtn"
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
                     Cancel
                 </button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                    Upload
+                <button type="submit" id="uploadMemberBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+                    <span id="uploadMemberBtnText">Upload</span>
+                    <svg id="uploadMemberSpinner" class="hidden animate-spin ml-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 </button>
             </div>
         </form>
@@ -253,6 +254,53 @@
 </div>
 
 <script>
+    // Member Upload Form Handler
+    document.getElementById('uploadMemberForm').addEventListener('submit', function(e) {
+        const uploadBtn = document.getElementById('uploadMemberBtn');
+        const uploadBtnText = document.getElementById('uploadMemberBtnText');
+        const uploadSpinner = document.getElementById('uploadMemberSpinner');
+        const cancelBtn = document.getElementById('cancelMemberBtn');
+        const closeBtn = document.getElementById('closeMemberModalBtn');
+        const fileInput = document.getElementById('memberFileInput');
+        
+        // Validate file
+        if (!fileInput.files || !fileInput.files[0]) {
+            e.preventDefault();
+            alert('Please select a CSV file to upload.');
+            return;
+        }
+        
+        // Show loading state and disable all close options
+        uploadBtnText.textContent = 'Uploading...';
+        uploadSpinner.classList.remove('hidden');
+        uploadBtn.disabled = true;
+        cancelBtn.disabled = true;
+        closeBtn.disabled = true;
+        uploadBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        cancelBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    });
+
+    // Close member upload modal
+    function closeMemberUploadModal() {
+        const modal = document.getElementById('uploadModal');
+        const uploadForm = document.getElementById('uploadMemberForm');
+        const uploadBtn = document.getElementById('uploadMemberBtn');
+        const uploadBtnText = document.getElementById('uploadMemberBtnText');
+        const uploadSpinner = document.getElementById('uploadMemberSpinner');
+        const cancelBtn = document.getElementById('cancelMemberBtn');
+        const closeBtn = document.getElementById('closeMemberModalBtn');
+        
+        modal.classList.add('hidden');
+        uploadForm.reset();
+        uploadBtnText.textContent = 'Upload';
+        uploadSpinner.classList.add('hidden');
+        uploadBtn.disabled = false;
+        cancelBtn.disabled = false;
+        closeBtn.disabled = false;
+        uploadBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        cancelBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
     // Toggle select all checkboxes
     function toggleSelectAll(checkbox) {
         const checkboxes = document.querySelectorAll('.member-checkbox');

@@ -200,11 +200,11 @@
 </div>
 
 <!-- Upload CSV Modal -->
-<div id="uploadModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+<div id="uploadModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full z-50 flex items-center justify-center p-4" onclick="event.target === this && !document.getElementById('uploadBtn').disabled && closeUploadModal()">
+    <div class="w-full max-w-4xl p-6 border shadow-lg rounded-md bg-white">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-medium text-gray-900">Upload Books CSV</h3>
-            <button onclick="closeUploadModal()" type="button" class="text-gray-400 hover:text-gray-500">
+            <button onclick="if(!this.disabled) closeUploadModal()" type="button" id="closeModalBtn" class="text-gray-400 hover:text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -244,21 +244,7 @@
                     <li><strong>itype, ccode</strong> → Book category/type</li>
                     <li><strong>holding branch</strong> → Branch location</li>
                 </ul>
-            </div>
-            
-            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                <h4 class="text-sm font-medium text-green-800 mb-2">Alternative/Legacy Column Names Also Accepted:</h4>
-                <ul class="text-xs text-green-700 list-disc list-inside space-y-1">
-                    <li><strong>Title:</strong> title, book title, booktitle, book_title</li>
-                    <li><strong>Author:</strong> author, authors, author/s, writer</li>
-                    <li><strong>ISBN:</strong> isbn, isbn number, isbn_number, isbn no, isbn no.</li>
-                    <li><strong>Publisher:</strong> publisher, publishercode, publication</li>
-                    <li><strong>Year:</strong> year, publicationyear, publication year</li>
-                    <li><strong>Copies:</strong> copies, available, vol, volume, qty, quantity</li>
-                    <li><strong>Category:</strong> itype, ccode, type, category, classification</li>
-                    <li><strong>Tracking:</strong> barcode, callnumber, itemcallnumber, accession no</li>
-                </ul>
-                <p class="text-xs text-green-700 mt-2"><strong>Note:</strong> Column names are case-insensitive. ISBN auto-generated if missing. All metadata saved to description field.</p>
+                <p class="text-xs text-blue-700 mt-2"><strong>Note:</strong> Supports various column name formats. Column names are case-insensitive. ISBN auto-generated if missing.</p>
             </div>
             
             <div class="flex justify-end gap-3">
@@ -321,12 +307,14 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
         return;
     }
     
-    // Show loading state (don't disable fileInput as it prevents form submission)
+    // Show loading state and disable close button (don't disable fileInput as it prevents form submission)
     uploadBtnText.textContent = 'Uploading...';
     uploadSpinner.classList.remove('hidden');
     uploadBtn.disabled = true;
     cancelBtn.disabled = true;
+    document.getElementById('closeModalBtn').disabled = true;
     uploadBtn.classList.add('opacity-75', 'cursor-not-allowed');
+    cancelBtn.classList.add('opacity-50', 'cursor-not-allowed');
     
     // Allow form to submit naturally
 });
@@ -348,7 +336,9 @@ function closeUploadModal() {
     uploadSpinner.classList.add('hidden');
     uploadBtn.disabled = false;
     cancelBtn.disabled = false;
+    document.getElementById('closeModalBtn').disabled = false;
     uploadBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+    cancelBtn.classList.remove('opacity-50', 'cursor-not-allowed');
     uploadError.classList.add('hidden');
 }
 
