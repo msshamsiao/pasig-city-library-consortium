@@ -22,6 +22,7 @@ class LibrarySeeder extends Seeder
                 'website' => 'https://web.facebook.com/search/top/?q=pasig+city+library',
                 'contact_person' => 'Library Administrator',
                 'position' => 'Administrator',
+                'logo' => 'images/PCLLRC.png',
                 'is_active' => true,
             ],
             [
@@ -32,6 +33,7 @@ class LibrarySeeder extends Seeder
                 'website' => 'https://plpasig.edu.ph/campus-life/library-services/',
                 'contact_person' => 'Library Administrator',
                 'position' => 'Administrator',
+                'logo' => 'images/PLNP.jpg',
                 'is_active' => true,
             ],
             [
@@ -42,6 +44,7 @@ class LibrarySeeder extends Seeder
                 'website' => 'https://web.facebook.com/search/top/?q=pcist',
                 'contact_person' => 'Library Administrator',
                 'position' => 'Administrator',
+                'logo' => 'images/PCIST logo2.png',
                 'is_active' => true,
             ],
             [
@@ -52,6 +55,7 @@ class LibrarySeeder extends Seeder
                 'website' => 'https://pasigcitysciencehs.wordpress.com/',
                 'contact_person' => 'Library Administrator',
                 'position' => 'Administrator',
+                'logo' => 'images/PCSHS logo.png',
                 'is_active' => true,
             ],
             [
@@ -62,6 +66,7 @@ class LibrarySeeder extends Seeder
                 'website' => 'https://pasigcityhalllibrary.wordpress.com/',
                 'contact_person' => 'Library Administrator',
                 'position' => 'Administrator',
+                'logo' => 'images/Pasig City Logo.png',
                 'is_active' => true,
             ],
         ];

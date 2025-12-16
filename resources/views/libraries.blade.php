@@ -56,7 +56,7 @@
                     <div class="ml-6 flex-shrink-0">
                         <div class="border border-gray-200 rounded-lg p-3 bg-white">
                             @if($library->logo)
-                                <img src="{{ asset('storage/' . $library->logo) }}" alt="{{ $library->name }} Logo" class="w-16 h-16 object-contain">
+                                <img src="{{ asset($library->logo) }}" alt="{{ $library->name }} Logo" class="w-16 h-16 object-contain">
                             @else
                                 <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="w-16 h-16 object-contain">
                             @endif
