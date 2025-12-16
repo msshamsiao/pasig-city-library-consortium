@@ -12,19 +12,43 @@ class ActivityController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Activity::where('library_id', Auth::user()->library_id);
+        $libraryId = Auth::user()->library_id;
+        $query = Activity::where('library_id', $libraryId);
         
-        // Filter by library if provided
-        if ($request->filled('library')) {
-            $query->where('library_id', $request->library);
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%");
+            });
         }
         
-        $activities = $query->latest()->paginate(20);
+        $activities = $query->latest()->paginate(20)->appends(['search' => $request->search]);
         
-        // Get libraries for filter dropdown
-        $libraries = \App\Models\Library::orderBy('name')->get();
+        // Calculate statistics
+        $stats = [
+            'total' => Activity::where('library_id', $libraryId)->count(),
+            'pending' => Activity::where('library_id', $libraryId)->where('approval_status', 'pending')->count(),
+            'approved' => Activity::where('library_id', $libraryId)->where('approval_status', 'approved')->count(),
+            'rejected' => Activity::where('library_id', $libraryId)->where('approval_status', 'rejected')->count(),
+            'upcoming' => Activity::where('library_id', $libraryId)
+                ->where('approval_status', 'approved')
+                ->where(function($q) {
+                    $q->where('start_date', '>=', now())
+                      ->orWhere(function($q2) {
+                          $q2->whereNull('start_date')
+                             ->where('activity_date', '>=', now());
+                      });
+                })->count(),
+            'this_month' => Activity::where('library_id', $libraryId)
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+        ];
         
-        return view('librarian.activities.index', compact('activities', 'libraries'));
+        return view('librarian.activities.index', compact('activities', 'stats'));
     }
 
     public function create()
@@ -69,6 +93,12 @@ class ActivityController extends Controller
             abort(403);
         }
 
+        // Only allow editing pending activities
+        if ($activity->approval_status !== 'pending') {
+            return redirect()->route('librarian.activities.index')
+                ->with('error', 'Only pending activities can be edited.');
+        }
+
         return view('librarian.activities.edit', compact('activity'));
     }
 
@@ -77,6 +107,12 @@ class ActivityController extends Controller
         // Check if activity belongs to librarian's library
         if ($activity->library_id != Auth::user()->library_id) {
             abort(403);
+        }
+
+        // Only allow updating pending activities
+        if ($activity->approval_status !== 'pending') {
+            return redirect()->route('librarian.activities.index')
+                ->with('error', 'Only pending activities can be updated.');
         }
 
         $validated = $request->validate([

@@ -20,34 +20,49 @@
     <!-- PUBLIC HEADER (No profile/logout) -->
     <header class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logos and Title -->
-                <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="h-14 w-auto">
-                    <span class="text-xl font-bold text-blue-900">Pasig City Library Consortium</span>
-                    <img src="{{ asset('images/Pasig City Logo.png') }}" alt="Pasig City Logo" class="h-14 w-auto">
-                </a>
+            <div class="flex justify-between items-center py-6">
+                <!-- Left Logo -->
+                <div class="flex items-center">
+                    <img src="{{ asset('images/PCLC_logo.png') }}" alt="PCLC Logo" class="h-16 w-auto">
+                </div>
 
-                <!-- Date/Time and Login Button -->
-                <div class="flex items-center gap-6">
-                    <div class="text-sm text-gray-600" x-data="{ 
-                        datetime: '',
-                        updateDateTime() {
-                            const now = new Date();
-                            const options = { 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit'
-                            };
-                            this.datetime = now.toLocaleString('en-US', options);
-                        }
-                    }" x-init="updateDateTime(); setInterval(() => updateDateTime(), 1000)">
-                        <span x-text="datetime"></span>
+                <!-- Center Title and Date/Time -->
+                <div class="flex flex-col items-center gap-2">
+                    <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-900 hover:text-blue-700 transition">
+                        Pasig City Library Consortium
+                    </a>
+                    <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200" 
+                         x-data="{ 
+                            datetime: '',
+                            updateDateTime() {
+                                const now = new Date();
+                                const options = { 
+                                    weekday: 'long',
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric'
+                                };
+                                const dateStr = now.toLocaleString('en-US', options);
+                                const timeStr = now.toLocaleTimeString('en-US', { 
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit'
+                                });
+                                this.datetime = dateStr + ' | ' + timeStr;
+                            }
+                        }" 
+                        x-init="updateDateTime(); setInterval(() => updateDateTime(), 1000)">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span x-text="datetime" class="font-medium"></span>
                     </div>
-                    <a href="{{ route('login') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                </div>
+
+                <!-- Right Side: Logo and Login -->
+                <div class="flex items-center gap-6">
+                    <img src="{{ asset('images/Pasig City Logo.png') }}" alt="Pasig City Logo" class="h-16 w-auto">
+                    <a href="{{ route('login') }}" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium shadow-sm">
                         Login to your account
                     </a>
                 </div>

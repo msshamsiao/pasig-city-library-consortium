@@ -15,45 +15,21 @@ class MemberController extends Controller
         $libraryId = Auth::user()->library_id;
         $search = $request->input('search');
         
-        // If no library assigned, show all borrowers
-        if (!$libraryId) {
-            $members = User::where('role', 'borrower')
-                ->when($search, function($q) use ($search) {
-                    return $q->where(function($query) use ($search) {
-                        $query->where('name', 'like', "%{$search}%")
-                              ->orWhere('email', 'like', "%{$search}%")
-                              ->orWhere('member_id', 'like', "%{$search}%")
-                              ->orWhere('phone', 'like', "%{$search}%");
-                    });
-                })
-                ->latest()
-                ->paginate(20);
-        } else {
-            // Get library acronym and filter members by library_branch
-            $library = \App\Models\Library::find($libraryId);
-            $libraryAcronym = $library ? $library->acronym : null;
-            
-            // Get member_ids from members table that belong to this library
-            $memberIds = \App\Models\Member::when($libraryAcronym, function($q) use ($libraryAcronym) {
-                return $q->where('library_branch', $libraryAcronym);
-            })->pluck('member_id')->toArray();
-            
-            // Get users that have these member_ids
-            $members = User::where('role', 'borrower')
-                ->when(!empty($memberIds), function($q) use ($memberIds) {
-                    return $q->whereIn('member_id', $memberIds);
-                })
-                ->when($search, function($q) use ($search) {
-                    return $q->where(function($query) use ($search) {
-                        $query->where('name', 'like', "%{$search}%")
-                              ->orWhere('email', 'like', "%{$search}%")
-                              ->orWhere('member_id', 'like', "%{$search}%")
-                              ->orWhere('phone', 'like', "%{$search}%");
-                    });
-                })
-                ->latest()
-                ->paginate(20);
-        }
+        // Filter borrowers by librarian's library - always filter by library_id
+        $members = User::with('library')
+            ->where('role', 'borrower')
+            ->where('library_id', $libraryId)
+            ->when($search, function($q) use ($search) {
+                return $q->where(function($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%")
+                          ->orWhere('member_id', 'like', "%{$search}%")
+                          ->orWhere('phone', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(20)
+            ->appends(['search' => $search]);
         
         return view('librarian.members.index', compact('members'));
     }

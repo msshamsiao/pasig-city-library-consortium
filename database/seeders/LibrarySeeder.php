@@ -17,7 +17,7 @@ class LibrarySeeder extends Seeder
             [
                 'name' => 'Pasig City Library and Learning Resource Center',
                 'acronym' => 'PCLLRC',
-                'address' => 'Pasig City, Metro Manila',
+                'address' => 'H36H+F88, Caruncho Ave, Pasig, 1600 Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://web.facebook.com/search/top/?q=pasig+city+library',
                 'contact_person' => 'Library Administrator',
@@ -25,9 +25,9 @@ class LibrarySeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => 'PLP - Pamantasan ng Lungsod ng Pasig',
-                'acronym' => 'PLP',
-                'address' => 'Pasig City, Metro Manila',
+                'name' => 'Pamantasan ng Lungsod ng Pasig',
+                'acronym' => 'PLNP',
+                'address' => '12-B Alcalde Jose, Pasig, 1600 Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://plpasig.edu.ph/campus-life/library-services/',
                 'contact_person' => 'Library Administrator',
@@ -37,7 +37,7 @@ class LibrarySeeder extends Seeder
             [
                 'name' => 'Pasig City Institute of Science and Technology',
                 'acronym' => 'PCIST',
-                'address' => 'Pasig City, Metro Manila',
+                'address' => 'Kaayusan St., Brgy. Manggahan, Pasig City',
                 'phone' => 'N/A',
                 'website' => 'https://web.facebook.com/search/top/?q=pcist',
                 'contact_person' => 'Library Administrator',
@@ -45,9 +45,9 @@ class LibrarySeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => 'Pasig City Science High School Library',
+                'name' => 'Pasig City Science High School',
                 'acronym' => 'PCSHS',
-                'address' => 'Pasig City, Metro Manila',
+                'address' => 'F. Legaspi St. Rainforest Park, Pasig, 1600',
                 'phone' => 'N/A',
                 'website' => 'https://pasigcitysciencehs.wordpress.com/',
                 'contact_person' => 'Library Administrator',
@@ -57,7 +57,7 @@ class LibrarySeeder extends Seeder
             [
                 'name' => 'Pasig City Hall Library',
                 'acronym' => 'PCHLib',
-                'address' => 'Pasig City Hall, Metro Manila',
+                'address' => 'Caruncho Ave, Barangay San Nicolas, Pasig, 1600 Metro Manila',
                 'phone' => 'N/A',
                 'website' => 'https://pasigcityhalllibrary.wordpress.com/',
                 'contact_person' => 'Library Administrator',

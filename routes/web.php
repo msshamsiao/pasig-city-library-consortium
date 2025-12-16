@@ -139,13 +139,14 @@ Route::prefix('librarian')->name('librarian.')->middleware(['auth', 'role:member
     Route::post('/members/upload', [\App\Http\Controllers\Librarian\MemberController::class, 'upload'])->name('members.upload');
     Route::post('/members/bulk-delete', [\App\Http\Controllers\Librarian\MemberController::class, 'bulkDelete'])->name('members.bulk-delete');
     
-    // Books Management (Upload Only)
+    // Books Management
     Route::get('/books', [\App\Http\Controllers\Librarian\BookController::class, 'index'])->name('books.index');
     Route::get('/books/create', [\App\Http\Controllers\Librarian\BookController::class, 'create'])->name('books.create');
     Route::post('/books', [\App\Http\Controllers\Librarian\BookController::class, 'store'])->name('books.store');
     Route::get('/books/{book}/edit', [\App\Http\Controllers\Librarian\BookController::class, 'edit'])->name('books.edit');
     Route::put('/books/{book}', [\App\Http\Controllers\Librarian\BookController::class, 'update'])->name('books.update');
     Route::post('/books/upload', [\App\Http\Controllers\Librarian\BookController::class, 'upload'])->name('books.upload');
+    Route::post('/books/bulk-delete', [\App\Http\Controllers\Librarian\BookController::class, 'bulkDelete'])->name('books.bulk-delete');
     
     // Reservations/Book Requests
     Route::get('/reservations', [\App\Http\Controllers\Librarian\ReservationController::class, 'index'])->name('reservations.index');

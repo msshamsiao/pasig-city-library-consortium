@@ -13,22 +13,27 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $libraryId = Auth::user()->library_id;
+        $search = $request->input('search');
         
-        // If no library assigned, show all books
-        if (!$libraryId) {
-            $books = Holding::with('library')
-                ->latest()
-                ->paginate(20);
-        } else {
-            // Filter books by the librarian's library branch
-            $books = Holding::with('library')
-                ->where('holding_branch_id', $libraryId)
-                ->latest()
-                ->paginate(20);
+        // Build query - always filter by librarian's library
+        $query = Holding::with('library')
+            ->where('holding_branch_id', $libraryId);
+        
+        // Apply search filter
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('author', 'like', "%{$search}%")
+                  ->orWhere('isbn', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
         }
+        
+        $books = $query->latest()->paginate(20)->appends(['search' => $search]);
         
         return view('librarian.books.index', compact('books'));
     }
@@ -170,6 +175,7 @@ class BookController extends Controller
             array_shift($csv);
             
             $imported = 0;
+            $updated = 0;
             $errors = [];
             $batchSize = 100;
             $holdingsToInsert = [];
@@ -181,8 +187,10 @@ class BookController extends Controller
             // Get existing ISBNs from database to avoid duplicates
             $existingIsbns = Holding::pluck('isbn')->toArray();
             
-            // Cache library lookups
-            $libraryCache = Library::pluck('id', 'acronym')->toArray();
+            // Cache library lookups with uppercase acronym keys for case-insensitive matching
+            $libraryCache = Library::all()->pluck('id', 'acronym')->mapWithKeys(function($id, $acronym) {
+                return [strtoupper($acronym) => $id];
+            })->toArray();
             
             foreach ($csv as $index => $row) {
                 // Skip empty rows
@@ -238,8 +246,29 @@ class BookController extends Controller
                 }
                 
                 // Check if ISBN already exists in database or in current batch
+                $existingBook = Holding::where('isbn', $isbn)
+                    ->where('holding_branch_id', $libraryId ?? Auth::user()->library_id)
+                    ->first();
+                
+                if ($existingBook) {
+                    // Update existing book by incrementing copies
+                    $existingBook->total_copies += $copies;
+                    $existingBook->available_copies += $copies;
+                    $existingBook->save();
+                    $updated++;
+                    continue;
+                }
+                
+                // Check if already in current batch
                 if (in_array($isbn, $existingIsbns)) {
-                    $errors[] = "Row " . ($index + 2) . ": ISBN '{$isbn}' already exists (Title: {$title})";
+                    // Find in batch and increment copies
+                    foreach ($holdingsToInsert as &$holding) {
+                        if ($holding['isbn'] === $isbn) {
+                            $holding['total_copies'] += $copies;
+                            $holding['available_copies'] += $copies;
+                            break;
+                        }
+                    }
                     continue;
                 }
                 
@@ -307,9 +336,14 @@ class BookController extends Controller
                 
                 // Find library by acronym using cached data
                 $libraryId = null;
-                if ($holdingBranch) {
+                if ($holdingBranch && strtoupper(trim($holdingBranch)) !== 'N/A') {
                     $acronymKey = strtoupper(trim($holdingBranch));
                     $libraryId = $libraryCache[$acronymKey] ?? null;
+                }
+                
+                // If no library found from CSV, use the logged-in librarian's library
+                if (!$libraryId) {
+                    $libraryId = Auth::user()->library_id;
                 }
                 
                 // Build description from available fields
@@ -373,8 +407,12 @@ class BookController extends Controller
             }
             
             // Prepare response message
-            if ($imported > 0) {
-                $message = "Successfully imported {$imported} book(s).";
+            if ($imported > 0 || $updated > 0) {
+                $message = "Successfully imported {$imported} book(s)";
+                if ($updated > 0) {
+                    $message .= " and updated {$updated} existing book(s) with additional copies";
+                }
+                $message .= ".";
                 if (!empty($errors)) {
                     $message .= " " . count($errors) . " row(s) had errors.";
                 }
@@ -392,6 +430,71 @@ class BookController extends Controller
                         
         } catch (\Exception $e) {
             return back()->with('error', 'Error processing CSV file: ' . $e->getMessage());
+        }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        try {
+            $bookIds = $request->input('book_ids', []);
+            
+            if (empty($bookIds)) {
+                return redirect()->back()->with('error', 'No books selected for deletion.');
+            }
+            
+            $libraryId = Auth::user()->library_id;
+            $deletedCount = 0;
+            
+            foreach ($bookIds as $bookId) {
+                $book = Holding::find($bookId);
+                
+                if (!$book) {
+                    continue;
+                }
+                
+                // Authorization check - only delete books from librarian's branch
+                if ($libraryId && $book->holding_branch_id != $libraryId) {
+                    continue;
+                }
+                
+                // Store book details before deletion for audit log
+                $bookTitle = $book->title;
+                $bookAuthor = $book->author;
+                $bookIsbn = $book->isbn;
+                
+                // Delete the book
+                $book->delete();
+                $deletedCount++;
+                
+                // Log the deletion
+                AuditLog::log(
+                    'delete',
+                    'Holding',
+                    "Deleted book: {$bookTitle} by {$bookAuthor} (ISBN: {$bookIsbn})",
+                    $bookId,
+                    [
+                        'title' => $bookTitle,
+                        'author' => $bookAuthor,
+                        'isbn' => $bookIsbn,
+                        'holding_branch_id' => $book->holding_branch_id,
+                    ],
+                    null
+                );
+            }
+            
+            if ($deletedCount > 0) {
+                return redirect()->back()->with('success', "Successfully deleted {$deletedCount} book(s).");
+            } else {
+                return redirect()->back()->with('error', 'No books were deleted. You can only delete books from your library branch.');
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Bulk delete books error', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+            ]);
+            
+            return redirect()->back()->with('error', 'An error occurred while deleting books: ' . $e->getMessage());
         }
     }
 }

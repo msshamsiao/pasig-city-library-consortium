@@ -20,8 +20,10 @@ class AnalyticsController extends Controller
             // Count books in this specific library's holdings
             $totalBooks = Holding::where('holding_branch_id', $library->id)->count();
             
-            // Count members with this library's acronym
-            $totalMembers = \App\Models\Member::where('library_branch', $library->acronym)->count();
+            // Count borrowers (members) registered to this library
+            $totalMembers = User::where('role', 'borrower')
+                ->where('library_id', $library->id)
+                ->count();
             
             // Count active requests for books in this library
             $activeRequests = \App\Models\Borrowing::whereIn('status', ['pending', 'reserved'])

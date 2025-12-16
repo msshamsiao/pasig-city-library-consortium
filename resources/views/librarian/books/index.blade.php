@@ -17,6 +17,48 @@
             </button>
         </div>
 
+        <!-- Search and Bulk Actions -->
+        <div class="mb-6 flex flex-col sm:flex-row gap-4">
+            <!-- Search Form -->
+            <form method="GET" action="{{ route('librarian.books.index') }}" class="flex-1" id="searchForm">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input type="text" name="search" id="searchInput" value="{{ request('search') }}" 
+                        placeholder="Search by title, author, ISBN, category..."
+                        class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        autocomplete="off">
+                    @if(request('search'))
+                    <button type="button" onclick="clearSearch()" 
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    @endif
+                    <div id="searchLoading" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Bulk Actions -->
+            <div id="bulkActionsContainer" class="hidden">
+                <button onclick="bulkDelete()" class="inline-flex items-center px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Delete Selected (<span id="selectedCount">0</span>)
+                </button>
+            </div>
+        </div>
+
         <!-- Success Message -->
         @if(session('success'))
         <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg relative" role="alert">
@@ -56,6 +98,10 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th class="px-3 py-2 w-8">
+                            <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" 
+                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        </th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Book</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">ISBN</th>
@@ -69,6 +115,10 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($books as $book)
                     <tr class="hover:bg-gray-50">
+                        <td class="px-3 py-2">
+                            <input type="checkbox" class="book-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
+                                value="{{ $book->id }}" onchange="updateBulkActions()">
+                        </td>
                         <td class="px-3 py-2">
                             <div class="text-sm font-medium text-gray-900">{{ Str::limit($book->title, 40) }}</div>
                             @if($book->description)
@@ -112,8 +162,12 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-3 py-4 text-center text-sm text-gray-500">
-                            No books found. Add books using the "Upload CSV" button.
+                        <td colspan="9" class="px-3 py-4 text-center text-sm text-gray-500">
+                            @if(request('search'))
+                                No books found matching "{{ request('search') }}".
+                            @else
+                                No books found. Add books using the "Upload CSV" button.
+                            @endif
                         </td>
                     </tr>
                     @endforelse
@@ -296,6 +350,101 @@ function closeUploadModal() {
     cancelBtn.disabled = false;
     uploadBtn.classList.remove('opacity-75', 'cursor-not-allowed');
     uploadError.classList.add('hidden');
+}
+
+// Auto-search functionality
+const searchInput = document.getElementById('searchInput');
+const searchForm = document.getElementById('searchForm');
+const searchLoading = document.getElementById('searchLoading');
+let searchTimeout;
+
+if (searchInput && searchForm) {
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        
+        // Show loading indicator
+        if (searchLoading && this.value) {
+            searchLoading.classList.remove('hidden');
+        }
+        
+        // Debounce search - submit after 300ms of no typing
+        searchTimeout = setTimeout(() => {
+            searchForm.submit();
+        }, 300);
+    });
+}
+
+// Clear search function
+function clearSearch() {
+    searchInput.value = '';
+    searchForm.submit();
+}
+
+// Checkbox selection
+function toggleSelectAll(checkbox) {
+    const checkboxes = document.querySelectorAll('.book-checkbox');
+    checkboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+    });
+    updateBulkActions();
+}
+
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.book-checkbox:checked');
+    const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+    const selectedCount = document.getElementById('selectedCount');
+    const selectAll = document.getElementById('selectAll');
+    
+    if (checkboxes.length > 0) {
+        bulkActionsContainer.classList.remove('hidden');
+        selectedCount.textContent = checkboxes.length;
+    } else {
+        bulkActionsContainer.classList.add('hidden');
+    }
+    
+    // Update select all checkbox state
+    const allCheckboxes = document.querySelectorAll('.book-checkbox');
+    selectAll.checked = allCheckboxes.length > 0 && checkboxes.length === allCheckboxes.length;
+}
+
+// Bulk delete function
+function bulkDelete() {
+    const checkboxes = document.querySelectorAll('.book-checkbox:checked');
+    
+    if (checkboxes.length === 0) {
+        alert('Please select at least one book to delete.');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete ${checkboxes.length} selected book(s)? This action cannot be undone.`)) {
+        return;
+    }
+    
+    const bookIds = Array.from(checkboxes).map(cb => cb.value);
+    
+    // Create and submit form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("librarian.books.bulk-delete") }}';
+    
+    // Add CSRF token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_token';
+    csrfInput.value = '{{ csrf_token() }}';
+    form.appendChild(csrfInput);
+    
+    // Add book IDs
+    bookIds.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'book_ids[]';
+        input.value = id;
+        form.appendChild(input);
+    });
+    
+    document.body.appendChild(form);
+    form.submit();
 }
 </script>
 @endsection

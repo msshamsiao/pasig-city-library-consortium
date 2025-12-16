@@ -29,27 +29,38 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
         
-        // Member Librarian (for each library - create one sample)
+        // Seed Libraries first
+        $this->call([
+            LibrarySeeder::class,
+        ]);
+        
+        // Get PLNP library ID
+        $plnpLibrary = Library::where('acronym', 'PLNP')->first();
+        
+        // Member Librarian for PLNP
         User::create([
             'name' => 'Librarian',
             'email' => 'librarian@pasigcitylibrary.gov.ph',
             'password' => bcrypt('librarian123'),
             'role' => 'member_librarian',
+            'member_id' => 'PLNP-LIB-001',
+            'library_id' => $plnpLibrary?->id,
             'email_verified_at' => now(),
         ]);
         
-        // Borrower/Member
+        // Borrower/Member for PLNP
         User::create([
             'name' => 'John Doe',
             'email' => 'borrower@example.com',
             'password' => bcrypt('borrower123'),
             'role' => 'borrower',
+            'member_id' => 'PLNP-2025-999',
+            'library_id' => $plnpLibrary?->id,
             'email_verified_at' => now(),
         ]);
         
-        // Seed Libraries
+        // Seed Members
         $this->call([
-            LibrarySeeder::class,
             MemberSeeder::class,
         ]);
         
