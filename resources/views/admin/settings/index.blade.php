@@ -154,12 +154,12 @@
                 <h3 class="text-lg font-semibold text-gray-900">Super Administrators</h3>
                 <p class="text-sm text-gray-600 mt-1">Manage system administrators</p>
             </div>
-            <button onclick="openAddAdminModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+            <a href="{{ route('admin.settings.super-admins.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Add Super Admin
-            </button>
+            </a>
         </div>
 
         <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-200">
@@ -186,12 +186,12 @@
                         <td class="px-4 py-3 text-sm">
                             <div class="flex items-center gap-2">
                                 <!-- Edit button -->
-                                <button onclick="openEditAdminModal({{ $admin->id }}, '{{ $admin->name }}', '{{ $admin->email }}')" 
-                                        class="p-2 text-green-600 hover:bg-green-50 rounded-full transition" title="Edit">
+                                <a href="{{ route('admin.settings.super-admins.edit', $admin) }}" 
+                                   class="p-2 text-green-600 hover:bg-green-50 rounded-full transition" title="Edit">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                     </svg>
-                                </button>
+                                </a>
                                 <!-- Delete button -->
                                 @if($admin->id !== auth()->id())
                                 <form action="{{ route('admin.settings.super-admins.destroy', $admin) }}" method="POST" class="inline" 
@@ -227,119 +227,6 @@
     </div>
 </div>
 
-<!-- Add Super Admin Modal -->
-<div id="addAdminModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Add Super Admin</h3>
-            <button onclick="closeAddAdminModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-        <form action="{{ route('admin.settings.super-admins.store') }}" method="POST" class="space-y-4">
-            @csrf
-            <div>
-                <label for="add_name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" id="add_name" name="name" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('name')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label for="add_email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="add_email" name="email" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('email')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label for="add_password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="add_password" name="password" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('password')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label for="add_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                <input type="password" id="add_password_confirmation" name="password_confirmation" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="flex justify-end gap-2 pt-4">
-                <button type="button" onclick="closeAddAdminModal()" 
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    Cancel
-                </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Create Admin
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Edit Super Admin Modal -->
-<div id="editAdminModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Edit Super Admin</h3>
-            <button onclick="closeEditAdminModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-        <form id="editAdminForm" method="POST" class="space-y-4">
-            @csrf
-            @method('PUT')
-            <div>
-                <label for="edit_name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" id="edit_name" name="name" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('name')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label for="edit_email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="edit_email" name="email" required 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('email')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label for="edit_password" class="block text-sm font-medium text-gray-700 mb-1">New Password (leave blank to keep current)</label>
-                <input type="password" id="edit_password" name="password" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('password')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label for="edit_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                <input type="password" id="edit_password_confirmation" name="password_confirmation" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="flex justify-end gap-2 pt-4">
-                <button type="button" onclick="closeEditAdminModal()" 
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    Cancel
-                </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Update Admin
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
 // Tab switching functionality
 function switchTab(tabName) {
@@ -363,38 +250,11 @@ function switchTab(tabName) {
     activeTab.classList.remove('border-transparent', 'text-gray-500');
 }
 
-function openAddAdminModal() {
-    document.getElementById('addAdminModal').classList.remove('hidden');
-}
-
-function closeAddAdminModal() {
-    document.getElementById('addAdminModal').classList.add('hidden');
-}
-
-function openEditAdminModal(id, name, email) {
-    document.getElementById('editAdminForm').action = `/admin/settings/super-admins/${id}`;
-    document.getElementById('edit_name').value = name;
-    document.getElementById('edit_email').value = email;
-    document.getElementById('edit_password').value = '';
-    document.getElementById('edit_password_confirmation').value = '';
-    document.getElementById('editAdminModal').classList.remove('hidden');
-}
-
-function closeEditAdminModal() {
-    document.getElementById('editAdminModal').classList.add('hidden');
-}
-
-// Close modals when clicking outside
-window.onclick = function(event) {
-    const addModal = document.getElementById('addAdminModal');
-    const editModal = document.getElementById('editAdminModal');
-    
-    if (event.target === addModal) {
-        closeAddAdminModal();
+// Check if URL has hash and switch to that tab
+window.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#admins') {
+        switchTab('admins');
     }
-    if (event.target === editModal) {
-        closeEditAdminModal();
-    }
-}
+});
 </script>
 @endsection

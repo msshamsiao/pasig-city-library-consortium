@@ -144,9 +144,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
     
     // Settings
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    Route::get('settings/super-admins/create', [\App\Http\Controllers\Admin\SettingsController::class, 'createSuperAdmin'])->name('settings.super-admins.create');
     Route::post('settings/super-admins', [\App\Http\Controllers\Admin\SettingsController::class, 'storeSuperAdmin'])->name('settings.super-admins.store');
+    Route::get('settings/super-admins/{user}/edit', [\App\Http\Controllers\Admin\SettingsController::class, 'editSuperAdmin'])->name('settings.super-admins.edit');
     Route::put('settings/super-admins/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'updateSuperAdmin'])->name('settings.super-admins.update');
     Route::delete('settings/super-admins/{user}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroySuperAdmin'])->name('settings.super-admins.destroy');
     Route::post('settings/librarians', [\App\Http\Controllers\Admin\SettingsController::class, 'storeLibrarian'])->name('settings.librarians.store');

@@ -41,6 +41,11 @@ class SettingsController extends Controller
             ->with('success', 'Settings updated successfully.');
     }
 
+    public function createSuperAdmin()
+    {
+        return view('admin.settings.create');
+    }
+
     public function storeSuperAdmin(Request $request)
     {
         $validated = $request->validate([
@@ -69,6 +74,17 @@ class SettingsController extends Controller
 
         return redirect()->route('admin.settings.index')
             ->with('success', 'Super Admin created successfully.');
+    }
+
+    public function editSuperAdmin(User $user)
+    {
+        // Ensure the user is a super admin
+        if ($user->role !== 'super_admin') {
+            return redirect()->route('admin.settings.index')
+                ->with('error', 'User not found or not a super admin.');
+        }
+
+        return view('admin.settings.edit', ['admin' => $user]);
     }
 
     public function updateSuperAdmin(Request $request, User $user)
