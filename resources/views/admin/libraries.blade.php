@@ -74,7 +74,7 @@
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
         <div class="w-full">
             <table class="w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Library Name</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>

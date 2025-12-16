@@ -96,7 +96,7 @@
         <!-- Books Table -->
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr>
                         <th class="px-3 py-2 w-8">
                             <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" 

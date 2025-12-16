@@ -164,7 +164,7 @@
 
         <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
@@ -217,6 +217,11 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-6">
+            <x-pagination :items="$superAdmins" />
         </div>
         </div>
     </div>

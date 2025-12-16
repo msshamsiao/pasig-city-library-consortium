@@ -1,8 +1,8 @@
 @props(['items', 'perPageOptions' => [10, 20, 50, 100]])
 
 <div class="bg-white px-4 py-3 border-t border-gray-200">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <!-- Left: Per page selector -->
+    <div class="flex flex-col items-center justify-center gap-3">
+        <!-- Per page selector -->
         <div class="flex items-center gap-2">
             <span class="text-sm text-gray-700">Show:</span>
             <select 
@@ -20,12 +20,12 @@
             <span class="text-sm text-gray-700">entries</span>
         </div>
 
-        <!-- Center: Showing info -->
+        <!-- Showing info -->
         <div class="text-sm text-gray-700">
             Showing <span class="font-semibold text-gray-900">{{ $items->firstItem() ?? 0 }}</span> to <span class="font-semibold text-gray-900">{{ $items->lastItem() ?? 0 }}</span> of <span class="font-semibold text-gray-900">{{ $items->total() }}</span> results
         </div>
 
-        <!-- Right: Pagination links -->
+        <!-- Pagination links -->
         <div>
             {{ $items->onEachSide(1)->links() }}
         </div>

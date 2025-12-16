@@ -22,7 +22,7 @@ class Borrowing extends Model
     ];
 
     protected $casts = [
-        'borrowed_date' => 'date',
+        'borrowed_date' => 'datetime',
         'due_date' => 'date',
         'return_date' => 'date',
         'fine_amount' => 'decimal:2',

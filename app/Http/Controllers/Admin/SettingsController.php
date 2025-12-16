@@ -12,9 +12,13 @@ use Illuminate\Validation\Rules;
 
 class SettingsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $superAdmins = User::where('role', 'super_admin')->orderBy('name')->get();
+        $perPage = $request->get('per_page', 10);
+        $superAdmins = User::where('role', 'super_admin')
+            ->orderBy('name')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
         
         return view('admin.settings.index', compact('superAdmins'));
     }

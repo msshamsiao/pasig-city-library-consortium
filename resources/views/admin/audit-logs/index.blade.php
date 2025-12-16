@@ -74,7 +74,7 @@
         <!-- Audit Logs Table -->
         <div class="bg-white rounded-lg shadow-sm">
                 <table class="w-full table-fixed divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
                         <tr>
                             <th class="w-[12%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date/Time</th>
                             <th class="w-[15%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
